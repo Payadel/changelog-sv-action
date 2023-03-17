@@ -18,20 +18,32 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Print
+        run: |
+          echo "version: ${{ inputs.version }}"
+          echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - name: Print & Validate inputs
+      - name: Build
         run: |
-          echo "version: ${{ inputs.version }}"
-          echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+          npm install
+          npm run build
+          npm run package
 
       - name: Run Action
         uses: ./
         id: changelog
         with:
           version: ${{ inputs.version }}
+
+      # We only want to update the changelog file, not other files.
+      - name: Remove additional changes
+        run: |
+          git checkout -- dist/ lib/
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
