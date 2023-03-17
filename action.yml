@@ -1,0 +1,20 @@
+name: 'Create Changelog'
+description: 'create changelog base standard-version package'
+author: 'Payadel'
+
+# Here we define the inputs, which can be set
+# from the workflow file and are consumed in our code
+inputs:
+  version:
+    description: 'specific version?'
+    required: false
+    default: ''
+outputs:
+  version:
+    description: 'The version that was produced'
+  changelog:
+    description: 'changelog text'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
