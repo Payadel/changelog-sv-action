@@ -18,6 +18,7 @@ module.exports = {
     },
     plugins: ["jest", "@typescript-eslint"],
     rules: {
+        "github/no-then": "off",
         "i18n-text/no-en": "off",
         "eslint-comments/no-use": "off",
         "import/no-namespace": "off",
@@ -55,7 +56,6 @@ module.exports = {
         "@typescript-eslint/prefer-function-type": "warn",
         "@typescript-eslint/prefer-includes": "error",
         "@typescript-eslint/prefer-string-starts-ends-with": "error",
-        "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/require-array-sort-compare": "error",
         "@typescript-eslint/restrict-plus-operands": "error",
         semi: "off",

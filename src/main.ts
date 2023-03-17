@@ -19,7 +19,7 @@ async function main(): Promise<void> {
 
   // If specific version is requested, update version:
   if (inputVersion) {
-    let execOutput = await updateVersion(inputVersion);
+    execOutput = await updateVersion(inputVersion);
     if (execOutput.exitCode !== 0) {
       core.setFailed(
         `Update version to requested version failed: ${execOutput.stderr}`
@@ -55,7 +55,7 @@ async function main(): Promise<void> {
   }
 }
 
-function updateVersion(version: string): Promise<exec.ExecOutput> {
+async function updateVersion(version: string): Promise<exec.ExecOutput> {
   return exec.getExecOutput(
     `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${version}`
   );
