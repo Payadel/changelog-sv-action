@@ -8,6 +8,15 @@ async function main(): Promise<void> {
   const inputVersion = core.getInput("version");
   core.info(`Input version: ${inputVersion}`);
 
+  //Install standard-version package
+  let execOutput = await exec.getExecOutput("npm install -g standard-version");
+  if (execOutput.exitCode !== 0) {
+    core.setFailed(
+      `Install standard-version npm package failed: ${execOutput.stderr}`
+    );
+    return;
+  }
+
   // If specific version is requested, update version:
   if (inputVersion) {
     let execOutput = await updateVersion(inputVersion);
