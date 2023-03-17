@@ -40,6 +40,11 @@ jobs:
         with:
           version: ${{ inputs.version }}
 
+      # We only want to update the changelog file, not other files.
+      - name: Remove additional changes
+        run: |
+          git checkout -- dist/ lib/
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
