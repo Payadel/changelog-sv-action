@@ -1,10 +1,9 @@
 name: 'build-test'
-on: # rebuild any PRs and main branch changes
+on:
   pull_request:
-  push:
     branches:
       - main
-      - 'releases/*'
+      - dev
 
 jobs:
   build: # make sure build/ci work properly
@@ -22,15 +21,28 @@ jobs:
 
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - name: Run Action
         uses: ./
-        id: hello
+        id: changelog
         with:
-          who-to-greet: World
-          milliseconds: 1000
+          version: '1.0.0'
 
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Get the output
+        run: |
+          echo "Outputs:"
+          echo "Version: ${{ steps.changelog.outputs.version }}"
+          echo "Changelog: ${{ steps.changelog.outputs.changelog }}"
+        if: steps.changelog.outcome == 'success'

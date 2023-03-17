@@ -5,42 +5,68 @@ import * as fs from "fs";
 const CHANGELOG_FILE_NAME = "CHANGELOG.md";
 
 async function main(): Promise<void> {
-    const inputVersion = core.getInput("version")
-    if (inputVersion) {
-        let execResult = await exec.getExecOutput(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`);
-        if (execResult.exitCode !== 0) {
-            core.setFailed(`Run release-as failed: ${execResult.stderr}`);
-            return;
-        }
-    }
+  const inputVersion = core.getInput("version");
+  core.info(`Input version: ${inputVersion}`);
 
-    let command = "standard-version --skip.tag --skip.commit"
-    if (inputVersion)
-        command += " --skip.bump"
+  //Install standard-version package
+  let execOutput = await exec.getExecOutput("npm install -g standard-version");
+  if (execOutput.exitCode !== 0) {
+    core.setFailed(
+      `Install standard-version npm package failed: ${execOutput.stderr}`
+    );
+    return;
+  }
 
-    try {
-        await exec.getExecOutput(command)
-            .then(() => exec.getExecOutput(`git add ${CHANGELOG_FILE_NAME}`))
-            .then(() => exec.getExecOutput("git checkout -- package.json"))
-            .then(() => getVersion(inputVersion)
-                .then(version => core.setOutput("version", version)))
-            .then(() => core.setOutput("changelog", fs.readFileSync(CHANGELOG_FILE_NAME, "utf8")));
-    } catch (error) {
-        if (error instanceof Error) core.setFailed(error.message);
+  // If specific version is requested, update version:
+  if (inputVersion) {
+    let execOutput = await updateVersion(inputVersion);
+    if (execOutput.exitCode !== 0) {
+      core.setFailed(
+        `Update version to requested version failed: ${execOutput.stderr}`
+      );
+      return;
     }
+  }
+
+  let changelogCommand = "standard-version --skip.tag --skip.commit";
+  if (inputVersion) changelogCommand += " --skip.bump";
+
+  try {
+    await exec
+      .getExecOutput(changelogCommand)
+      .then(() => exec.getExecOutput(`git add ${CHANGELOG_FILE_NAME}`))
+      // The version must not be changed until release.
+      .then(() => exec.getExecOutput("git checkout -- package.json"))
+      //set output 'version'
+      .then(() =>
+        getVersion(inputVersion).then(version =>
+          core.setOutput("version", version)
+        )
+      )
+      //set output 'changelog'
+      .then(() =>
+        core.setOutput(
+          "changelog",
+          fs.readFileSync(CHANGELOG_FILE_NAME, "utf8")
+        )
+      );
+  } catch (error) {
+    if (error instanceof Error) core.setFailed(error.message);
+  }
 }
 
-function getVersion(version) {
-    return new Promise((resolve, reject) => {
-        if (version) {
-            resolve(version);
-            return;
-        }
+function updateVersion(version: string): Promise<exec.ExecOutput> {
+  return exec.getExecOutput(
+    `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${version}`
+  );
+}
 
-        return exec.getExecOutput("node -p -e \"require('./package.json').version\"")
-            .then(result => result.stdout.trim())
-            .catch(reject);
-    })
+async function getVersion(version: string): Promise<string> {
+  if (version) return version;
+
+  return await exec
+    .getExecOutput("node -p -e \"require('./package.json').version\"")
+    .then(result => result.stdout.trim());
 }
 
 main();
