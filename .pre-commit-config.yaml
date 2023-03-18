@@ -16,3 +16,15 @@ repos:
     hooks:
       - id: action-validator
         stages: [ commit-msg ]
+  - repo: local
+    hooks:
+      - id: run-all-before-push
+        name: Run All Before Push
+        entry: .git-hooks/run-all-before-push.sh
+        language: script
+        stages: [ push ]
+      - id: before-commit
+        name: Before Commit
+        entry: .git-hooks/before-commit.sh
+        language: script
+        stages: [ commit-msg ]
