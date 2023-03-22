@@ -16,15 +16,15 @@ repos:
     hooks:
       - id: action-validator
         stages: [ commit-msg ]
-  - repo: local
+
+  - repo: https://github.com/Payadel/pre-commit-hooks
+    rev: v0.0.3
     hooks:
-      - id: run-all-before-push
+      - id: run-scripts
         name: Run All Before Push
-        entry: .git-hooks/run-all-before-push.sh
-        language: script
+        args: [ "-f", ".git-hooks/run-all-before-push.sh" ]
         stages: [ push ]
-      - id: before-commit
+      - id: run-scripts
         name: Before Commit
-        entry: .git-hooks/before-commit.sh
-        language: script
+        args: [ "-f", ".git-hooks/before-commit.sh" ]
         stages: [ commit-msg ]
