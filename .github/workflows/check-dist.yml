@@ -8,7 +8,7 @@ name: Check dist/
 on:
   push:
     branches:
-      - main
+      - dev
     paths-ignore:
       - '**.md'
   pull_request:
@@ -41,8 +41,8 @@ jobs:
         id: diff
 
       # If index.js was different than expected, upload the expected version as an artifact
-      - uses: actions/upload-artifact@v3
-        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
-        with:
-          name: dist
-          path: dist/
+#      - uses: actions/upload-artifact@v3
+#        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
+#        with:
+#          name: dist
+#          path: dist/
