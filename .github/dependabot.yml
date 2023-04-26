@@ -15,10 +15,28 @@ updates:
       interval: "weekly"
     target-branch: "dev"
 
-  # Enable version updates for Docker
+  # Enable version updates for npm release
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: "release"
+    # Check the npm registry for updates every day (weekdays)
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
+  # Enable version updates for Github actions
   - package-ecosystem: "github-actions"
     # Look for a `Dockerfile` in the `root` directory
     directory: "/"
+    # Check for updates once a week
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
+  # Enable version updates for Github actions release
+  - package-ecosystem: "github-actions"
+    # Look for a `Dockerfile` in the `root` directory
+    directory: "release"
     # Check for updates once a week
     schedule:
       interval: "weekly"

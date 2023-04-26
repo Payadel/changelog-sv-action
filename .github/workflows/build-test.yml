@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - dev
+  workflow_dispatch:
 
 jobs:
   build: # make sure build/ci work properly
@@ -40,9 +41,21 @@ jobs:
         with:
           version: '1.0.0'
 
+      # For more information and sample asserts, please see https://github.com/Payadel/assert/
+      - name: Test outputs
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: version
+              type: Equals
+              expected: '1.0.0'
+              actual: ${{ steps.changelog.outputs.version }}
+
       - name: Get the output
         run: |
           echo "Outputs:"
           echo "Version: ${{ steps.changelog.outputs.version }}"
           echo "Changelog: ${{ steps.changelog.outputs.changelog }}"
-        if: steps.changelog.outcome == 'success'
+
