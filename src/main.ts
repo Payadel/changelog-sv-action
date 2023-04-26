@@ -42,7 +42,9 @@ async function main(): Promise<void> {
         )
       )
       // The version must not be changed until release.
-      .then(() => exec.getExecOutput("git checkout -- package.json"))
+      .then(() =>
+        exec.getExecOutput("git checkout -- package.json package-lock.json")
+      )
       //set output 'changelog'
       .then(() =>
         core.setOutput(
@@ -50,8 +52,8 @@ async function main(): Promise<void> {
           fs.readFileSync(CHANGELOG_FILE_NAME, "utf8")
         )
       );
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message);
+  } catch (error: any) {
+    core.setFailed(error instanceof Error ? error.message : error.toString());
   }
 }
 
