@@ -1,11 +1,12 @@
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as fs from "fs";
+import { getInputs } from "./inputs";
 
 const CHANGELOG_FILE_NAME = "CHANGELOG.md";
 
 async function main(): Promise<void> {
-    const inputVersion = core.getInput("version");
+    const inputs = await getInputs();
 
     //Install standard-version package
     let execOutput = await exec.getExecOutput(
@@ -19,9 +20,9 @@ async function main(): Promise<void> {
     }
 
     // If specific version is requested, update version:
-    if (inputVersion) {
-        core.info(`set version to ${inputVersion}`);
-        execOutput = await updateVersion(inputVersion);
+    if (inputs.version) {
+        core.info(`set version to ${inputs.version}`);
+        execOutput = await updateVersion(inputs.version);
         if (execOutput.exitCode !== 0) {
             core.setFailed(
                 `Update version to requested version failed: ${execOutput.stderr}`
@@ -31,7 +32,7 @@ async function main(): Promise<void> {
     }
 
     let changelogCommand = "standard-version --skip.tag --skip.commit";
-    if (inputVersion) changelogCommand += " --skip.bump";
+    if (inputs.version) changelogCommand += " --skip.bump";
 
     try {
         await exec
@@ -39,7 +40,7 @@ async function main(): Promise<void> {
             .then(() => exec.getExecOutput(`git add ${CHANGELOG_FILE_NAME}`))
             //set output 'version'
             .then(() =>
-                getVersion(inputVersion).then(version =>
+                getVersion(inputs.version).then(version =>
                     core.setOutput("version", version)
                 )
             )
