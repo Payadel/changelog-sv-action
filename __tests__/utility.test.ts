@@ -1,4 +1,4 @@
-import { execCommand, readVersion } from "../src/utility";
+import { execCommand, readVersion, readFile } from "../src/utility";
 import fs, { mkdtempSync, writeFileSync } from "fs";
 import { join } from "path";
 
@@ -51,6 +51,37 @@ describe("readVersion", () => {
     test("give invalid path, should throw error", async () => {
         await expect(readVersion("invalid path")).rejects.toThrow(
             "Can not find package.json in 'invalid path'"
+        );
+    });
+});
+
+describe("readFile", () => {
+    let tempDir: string;
+    let filePath: string;
+    const content = "sample content";
+
+    beforeEach(() => {
+        // Create a unique temporary directory with a random name
+        tempDir = mkdtempSync("/tmp/test-");
+
+        // Write a package.json file to the temporary directory
+        filePath = join(tempDir, "file.txt");
+        writeFileSync(filePath, `    ${content}   `);
+    });
+
+    afterEach(() => {
+        // Delete the temporary directory
+        fs.rmSync(tempDir, { recursive: true });
+    });
+
+    test("should read file and return text with trim", async () => {
+        const content = await readFile(filePath);
+        expect(content).toBe(content);
+    });
+
+    test("give invalid path, should throw error", async () => {
+        await expect(readFile("invalid path")).rejects.toThrow(
+            "Can not find 'invalid path'."
         );
     });
 });

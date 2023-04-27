@@ -21,10 +21,11 @@ export function execCommand(
 
 export function readVersion(package_path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        if (!fs.existsSync(package_path))
+        if (!fs.existsSync(package_path)) {
             return reject(
                 new Error(`Can not find package.json in '${package_path}'.`)
             );
+        }
         return execCommand(
             `node -p -e "require('${package_path}').version"`,
             `Read version from '${package_path}' failed.`
@@ -33,7 +34,10 @@ export function readVersion(package_path: string): Promise<string> {
 }
 
 export function readFile(fileName: string): Promise<string> {
-    return new Promise<string>(resolve =>
-        resolve(fs.readFileSync(fileName, "utf8").trim())
-    );
+    return new Promise<string>((resolve, reject) => {
+        if (!fs.existsSync(fileName)) {
+            return reject(new Error(`Can not find '${fileName}'.`));
+        }
+        resolve(fs.readFileSync(fileName, "utf8").trim());
+    });
 }
