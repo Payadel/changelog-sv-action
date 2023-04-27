@@ -1,7 +1,7 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 109:
+/***/ 180:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -29,73 +29,213 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getInputs = void 0;
+const core = __importStar(__nccwpck_require__(186));
+const version_1 = __nccwpck_require__(217);
+const getInputs = () => new Promise(resolve => {
+    const version = getInputOrDefault("version", "", true, false);
+    if (version && !(0, version_1.isVersionValid)(version))
+        throw new Error("The input version is not valid.");
+    return resolve({
+        version,
     });
+});
+exports.getInputs = getInputs;
+function getInputOrDefault(name, default_value = "", trimWhitespace = false, required = false) {
+    const input = core.getInput(name, {
+        trimWhitespace,
+        required,
+    });
+    if (!input || input === "")
+        return default_value;
+    return input;
+}
+//# sourceMappingURL=inputs.js.map
+
+/***/ }),
+
+/***/ 109:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const run_1 = __importDefault(__nccwpck_require__(884));
+(0, run_1.default)();
+//# sourceMappingURL=main.js.map
+
+/***/ }),
+
+/***/ 884:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const exec = __importStar(__nccwpck_require__(514));
-const fs = __importStar(__nccwpck_require__(147));
+const inputs_1 = __nccwpck_require__(180);
+const utility_1 = __nccwpck_require__(857);
 const CHANGELOG_FILE_NAME = "CHANGELOG.md";
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const inputVersion = core.getInput("version");
-        //Install standard-version package
-        let execOutput = yield exec.getExecOutput("npm install -g standard-version");
-        if (execOutput.exitCode !== 0) {
-            core.setFailed(`Install standard-version npm package failed: ${execOutput.stderr}`);
-            return;
-        }
-        // If specific version is requested, update version:
-        if (inputVersion) {
-            core.info(`set version to ${inputVersion}`);
-            execOutput = yield updateVersion(inputVersion);
-            if (execOutput.exitCode !== 0) {
-                core.setFailed(`Update version to requested version failed: ${execOutput.stderr}`);
-                return;
-            }
-        }
+const run = () => mainProcess()
+    .then(() => core.info("Operation completed successfully."))
+    .catch(error => {
+    core.error("Operation failed.");
+    core.setFailed(error instanceof Error ? error.message : error.toString());
+});
+exports["default"] = run;
+function mainProcess() {
+    return (0, inputs_1.getInputs)().then(inputs => {
+        return installStandardVersion()
+            .then(() => updateVersion(inputs.version))
+            .then(() => createChangelog(inputs.version))
+            .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
+            .then(() => setOutputs(CHANGELOG_FILE_NAME));
+    });
+}
+function installStandardVersion() {
+    return (0, utility_1.execCommand)("npm install -g standard-version", "Install standard-version npm package failed.");
+}
+function updateVersion(inputVersion) {
+    return new Promise(resolve => {
+        if (!inputVersion)
+            return resolve();
+        core.info(`set version to ${inputVersion}`);
+        return (0, utility_1.execCommand)(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`, `Update version to requested version (${inputVersion}) failed.`);
+    });
+}
+function createChangelog(inputVersion) {
+    return new Promise(resolve => {
         let changelogCommand = "standard-version --skip.tag --skip.commit";
         if (inputVersion)
             changelogCommand += " --skip.bump";
-        try {
-            yield exec
-                .getExecOutput(changelogCommand)
-                .then(() => exec.getExecOutput(`git add ${CHANGELOG_FILE_NAME}`))
-                //set output 'version'
-                .then(() => getVersion(inputVersion).then(version => core.setOutput("version", version)))
-                // The version must not be changed until release.
-                .then(() => exec.getExecOutput("git checkout -- package.json package-lock.json"))
-                //set output 'changelog'
-                .then(() => core.setOutput("changelog", fs.readFileSync(CHANGELOG_FILE_NAME, "utf8")));
+        return resolve(changelogCommand);
+    }).then(changelogCommand => (0, utility_1.execCommand)(changelogCommand, "Create changelog failed."));
+}
+function updateGitChanges(changelog_fileName) {
+    return (0, utility_1.execCommand)(`git add ${changelog_fileName}`).then(() => (0, utility_1.execCommand)("git checkout -- package.json package-lock.json"));
+}
+function setOutputs(changelog_fileName) {
+    return (0, utility_1.readVersion)("./package.json")
+        .then(version => core.setOutput("version", version))
+        .then(() => (0, utility_1.readFile)(changelog_fileName).then(content => core.setOutput("changelog", content)));
+}
+//# sourceMappingURL=run.js.map
+
+/***/ }),
+
+/***/ 857:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readFile = exports.readVersion = exports.execCommand = void 0;
+const exec = __importStar(__nccwpck_require__(514));
+const fs_1 = __importDefault(__nccwpck_require__(147));
+function execCommand(command, errorMessage = null) {
+    return exec
+        .getExecOutput(command)
+        .then(output => {
+        if (output.exitCode === 0)
+            return output;
+        throw new Error(output.stderr);
+    })
+        .catch(error => {
+        const title = errorMessage || `Execute '${command}' failed.`;
+        const message = error instanceof Error ? error.message : error.toString();
+        throw new Error(`${title}\n${message}`);
+    });
+}
+exports.execCommand = execCommand;
+function readVersion(package_path) {
+    return new Promise((resolve, reject) => {
+        if (!fs_1.default.existsSync(package_path)) {
+            return reject(new Error(`Can not find package.json in '${package_path}'.`));
         }
-        catch (error) {
-            core.setFailed(error instanceof Error ? error.message : error.toString());
+        return execCommand(`node -p -e "require('${package_path}').version"`, `Read version from '${package_path}' failed.`).then(version => resolve(version.stdout.trim()));
+    });
+}
+exports.readVersion = readVersion;
+function readFile(fileName) {
+    return new Promise((resolve, reject) => {
+        if (!fs_1.default.existsSync(fileName)) {
+            return reject(new Error(`Can not find '${fileName}'.`));
         }
+        resolve(fs_1.default.readFileSync(fileName, "utf8").trim());
     });
 }
-function updateVersion(version) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return exec.getExecOutput(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${version}`);
-    });
+exports.readFile = readFile;
+//# sourceMappingURL=utility.js.map
+
+/***/ }),
+
+/***/ 217:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isVersionValid = void 0;
+const SEMANTIC_VERSION_REGEX = /^(0|[1-9]\d*)(\.\d+){0,2}(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+function isVersionValid(version) {
+    return SEMANTIC_VERSION_REGEX.test(version);
 }
-function getVersion(version) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (version)
-            return version;
-        return yield exec
-            .getExecOutput("node -p -e \"require('./package.json').version\"")
-            .then(result => result.stdout.trim());
-    });
-}
-main();
-//# sourceMappingURL=main.js.map
+exports.isVersionValid = isVersionValid;
+//# sourceMappingURL=version.js.map
 
 /***/ }),
 
