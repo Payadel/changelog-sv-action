@@ -35,14 +35,23 @@ function installStandardVersion(): Promise<exec.ExecOutput> {
 }
 
 function updateVersion(inputVersion: string): Promise<void> {
-    return new Promise<void>(resolve => {
-        if (!inputVersion) return resolve();
+    return new Promise<void>(() => {
+        if (!inputVersion) return;
 
-        core.info(`set version to ${inputVersion}`);
-        return execCommand(
-            `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
-            `Update version to requested version (${inputVersion}) failed.`
-        );
+        return readVersion("./package.json")
+            .then(version => {
+                if (version === inputVersion)
+                    throw new Error(
+                        `The input version '${inputVersion}' is equal to the previously version '${version}'.`
+                    );
+            })
+            .then(() => core.info(`set version to ${inputVersion}`))
+            .then(() =>
+                execCommand(
+                    `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
+                    `Update version to requested version (${inputVersion}) failed.`
+                )
+            );
     });
 }
 
