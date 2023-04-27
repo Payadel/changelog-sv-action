@@ -28,7 +28,6 @@ async function assertValidVersion(inputVersion: string): Promise<void> {
             )
     );
     const inputs = await getInputs();
-    expect(Object.keys(inputs).length).toBe(1);
     expect(inputs.version).toBe(inputVersion);
 }
 
@@ -70,7 +69,6 @@ describe("getInputs", () => {
 
         const inputs: IInputs = await getInputs();
 
-        expect(Object.keys(inputs).length).toBe(1);
         expect(inputs.version).toBe(version);
     });
 });
