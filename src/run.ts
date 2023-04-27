@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import { getInputs } from "./inputs";
 import * as exec from "@actions/exec";
-import { execCommand, readFile, readVersion } from "./utility";
+import { compareVersions, execCommand, readFile, readVersion } from "./utility";
 
 const CHANGELOG_FILE_NAME = "CHANGELOG.md";
 
@@ -20,12 +20,17 @@ export default run;
 function mainProcess(): Promise<void> {
     return getInputs().then(inputs => {
         return installStandardVersion()
-            .then(() =>
-                updateVersion(inputs.version, inputs.ignoreSameVersionError)
-            )
-            .then(() => createChangelog(inputs.version))
-            .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
-            .then(() => setOutputs(CHANGELOG_FILE_NAME));
+            .then(() => readVersion("./package.json"))
+            .then(prevVersion =>
+                updateVersion(
+                    inputs.version,
+                    prevVersion,
+                    inputs.ignoreSameVersionError
+                )
+                    .then(() => createChangelog(inputs.version))
+                    .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
+                    .then(() => setOutputs(CHANGELOG_FILE_NAME))
+            );
     });
 }
 
@@ -38,28 +43,30 @@ function installStandardVersion(): Promise<exec.ExecOutput> {
 
 function updateVersion(
     inputVersion: string,
+    prevVersion: string,
     ignoreSameVersionError: boolean
 ): Promise<void> {
     return new Promise<void>(() => {
         if (!inputVersion) return;
-
-        return Promise.resolve()
-            .then(() => {
-                if (ignoreSameVersionError) return;
-                return readVersion("./package.json").then(version => {
-                    if (version === inputVersion)
-                        throw new Error(
-                            `The input version '${inputVersion}' is equal to the previously version '${version}'.`
-                        );
-                });
-            })
-            .then(() => core.info(`set version to ${inputVersion}`))
-            .then(() =>
-                execCommand(
-                    `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
-                    `Update version to requested version (${inputVersion}) failed.`
-                )
+        if (
+            !ignoreSameVersionError &&
+            prevVersion.toLowerCase() === inputVersion.toLowerCase()
+        ) {
+            throw new Error(
+                `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.`
             );
+        }
+        if (compareVersions(inputVersion, prevVersion) === -1) {
+            throw new Error(
+                `The input version '${inputVersion}' is less than previously version '${prevVersion}'.`
+            );
+        }
+
+        core.info(`set version to ${inputVersion}`);
+        return execCommand(
+            `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
+            `Update version to requested version (${inputVersion}) failed.`
+        );
     });
 }
 

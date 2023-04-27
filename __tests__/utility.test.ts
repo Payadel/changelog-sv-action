@@ -1,4 +1,9 @@
-import { execCommand, readVersion, readFile } from "../src/utility";
+import {
+    execCommand,
+    readVersion,
+    readFile,
+    compareVersions,
+} from "../src/utility";
 import fs, { mkdtempSync, writeFileSync } from "fs";
 import { join } from "path";
 
@@ -83,5 +88,47 @@ describe("readFile", () => {
         await expect(readFile("invalid path")).rejects.toThrow(
             "Can not find 'invalid path'."
         );
+    });
+});
+
+describe("compareVersions", () => {
+    it("returns 0 when the versions are equal", () => {
+        expect(compareVersions("1.2.3", "1.2.3")).toBe(0);
+        expect(compareVersions("1", "1")).toBe(0);
+        expect(compareVersions("0", "0")).toBe(0);
+        expect(compareVersions("1.0", "1.0")).toBe(0);
+        expect(compareVersions("1.0.0", "1.0.0")).toBe(0);
+        expect(compareVersions("1.0.0-alpha", "1.0.0-alpha")).toBe(0);
+    });
+
+    it("returns -1 when the first version is less than the second", () => {
+        expect(compareVersions("1.2.3", "1.2.4")).toBe(-1);
+        expect(compareVersions("1.2.3", "1.3.0")).toBe(-1);
+        expect(compareVersions("1.2.3", "2.0.0")).toBe(-1);
+        expect(compareVersions("0", "1")).toBe(-1);
+        expect(compareVersions("0.0", "1")).toBe(-1);
+        expect(compareVersions("0.0.0-beta", "1")).toBe(-1);
+        expect(compareVersions("0.10.10", "1")).toBe(-1);
+        expect(compareVersions("1", "1.1")).toBe(-1);
+        expect(compareVersions("1", "1.0.1")).toBe(-1);
+    });
+
+    it("returns 1 when the first version is greater than the second", () => {
+        expect(compareVersions("1.2.4", "1.2.3")).toBe(1);
+        expect(compareVersions("1.3.0", "1.2.3")).toBe(1);
+        expect(compareVersions("2.0.0", "1.2.3")).toBe(1);
+        expect(compareVersions("1", "0")).toBe(1);
+        expect(compareVersions("1", "0.0")).toBe(1);
+        expect(compareVersions("1", "0.0.0-beta")).toBe(1);
+        expect(compareVersions("1", "0.10.10")).toBe(1);
+        expect(compareVersions("1.1", "1")).toBe(1);
+        expect(compareVersions("1.0.1", "1")).toBe(1);
+    });
+
+    it("treats missing parts as zeros", () => {
+        expect(compareVersions("1.2", "1.2.0")).toBe(0);
+        expect(compareVersions("1.2.0", "1.2")).toBe(0);
+        expect(compareVersions("1", "1.0.0")).toBe(0);
+        expect(compareVersions("1.0.0", "1")).toBe(0);
     });
 });
