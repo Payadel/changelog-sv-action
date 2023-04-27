@@ -20,7 +20,9 @@ export default run;
 function mainProcess(): Promise<void> {
     return getInputs().then(inputs => {
         return installStandardVersion()
-            .then(() => updateVersion(inputs.version))
+            .then(() =>
+                updateVersion(inputs.version, inputs.ignoreSameVersionError)
+            )
             .then(() => createChangelog(inputs.version))
             .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
             .then(() => setOutputs(CHANGELOG_FILE_NAME));
@@ -34,16 +36,22 @@ function installStandardVersion(): Promise<exec.ExecOutput> {
     );
 }
 
-function updateVersion(inputVersion: string): Promise<void> {
+function updateVersion(
+    inputVersion: string,
+    ignoreSameVersionError: boolean
+): Promise<void> {
     return new Promise<void>(() => {
         if (!inputVersion) return;
 
-        return readVersion("./package.json")
-            .then(version => {
-                if (version === inputVersion)
-                    throw new Error(
-                        `The input version '${inputVersion}' is equal to the previously version '${version}'.`
-                    );
+        return Promise.resolve()
+            .then(() => {
+                if (ignoreSameVersionError) return;
+                return readVersion("./package.json").then(version => {
+                    if (version === inputVersion)
+                        throw new Error(
+                            `The input version '${inputVersion}' is equal to the previously version '${version}'.`
+                        );
+                });
             })
             .then(() => core.info(`set version to ${inputVersion}`))
             .then(() =>

@@ -1,8 +1,10 @@
 import * as core from "@actions/core";
 import { isVersionValid } from "./version";
+import { getBooleanInput } from "@actions/core";
 
 export interface IInputs {
     version: string;
+    ignoreSameVersionError: boolean;
 }
 
 export const getInputs = (): Promise<IInputs> =>
@@ -11,8 +13,13 @@ export const getInputs = (): Promise<IInputs> =>
         if (version && !isVersionValid(version))
             throw new Error("The input version is not valid.");
 
+        const ignoreSameVersionError = getBooleanInput(
+            "ignore-same-version-error"
+        );
+
         return resolve({
             version,
+            ignoreSameVersionError,
         });
     });
 

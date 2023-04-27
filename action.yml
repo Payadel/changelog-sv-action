@@ -9,6 +9,10 @@ inputs:
     description: 'specific version?'
     required: false
     default: ''
+  ignore-same-version-error:
+    description: 'ignore the same version error or not?'
+    required: false
+    default: 'false'
 outputs:
   version:
     description: 'The version that was produced'
