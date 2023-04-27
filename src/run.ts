@@ -55,7 +55,8 @@ function updateVersion(
             prevVersion.toLowerCase() === inputVersion.toLowerCase()
         ) {
             throw new Error(
-                `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.`
+                `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.\n` +
+                    "If you want, you can set ignore-same-version-error to ignore this error."
             );
         }
         if (
@@ -63,7 +64,8 @@ function updateVersion(
             compareVersions(inputVersion, prevVersion) === -1
         ) {
             throw new Error(
-                `The input version '${inputVersion}' is less than previously version '${prevVersion}'.`
+                `The input version '${inputVersion}' is less than previously version '${prevVersion}'.\n` +
+                    "If you want, you can set ignore-less-version-error to ignore this error."
             );
         }
 
