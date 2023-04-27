@@ -65,7 +65,7 @@ function updateGitChanges(
 }
 
 function setOutputs(changelog_fileName: string): Promise<void> {
-    return readVersion()
+    return readVersion("./package.json")
         .then(version => core.setOutput("version", version))
         .then(() =>
             readFile(changelog_fileName).then(content =>

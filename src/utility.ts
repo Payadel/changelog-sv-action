@@ -19,11 +19,17 @@ export function execCommand(
         });
 }
 
-export function readVersion(): Promise<string> {
-    return execCommand(
-        "node -p -e \"require('./package.json').version\"",
-        "Read version from package.json failed."
-    ).then(version => version.stdout.trim());
+export function readVersion(package_path: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        if (!fs.existsSync(package_path))
+            return reject(
+                new Error(`Can not find package.json in '${package_path}'.`)
+            );
+        return execCommand(
+            `node -p -e "require('${package_path}').version"`,
+            `Read version from '${package_path}' failed.`
+        ).then(version => resolve(version.stdout.trim()));
+    });
 }
 
 export function readFile(fileName: string): Promise<string> {
