@@ -3,6 +3,8 @@ import { getInputs } from "./inputs";
 import * as exec from "@actions/exec";
 import { execCommand, readFile, readVersion } from "./utility";
 
+const CHANGELOG_FILE_NAME = "CHANGELOG.md";
+
 const run = (): Promise<void> =>
     mainProcess()
         .then(() => core.info("Operation completed successfully."))
@@ -20,8 +22,8 @@ function mainProcess(): Promise<void> {
         return installStandardVersion()
             .then(() => updateVersion(inputs.version))
             .then(() => createChangelog(inputs.version))
-            .then(() => updateGitChanges())
-            .then(() => setOutputs());
+            .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
+            .then(() => setOutputs(CHANGELOG_FILE_NAME));
     });
 }
 
@@ -54,17 +56,19 @@ function createChangelog(inputVersion: string): Promise<exec.ExecOutput> {
     );
 }
 
-function updateGitChanges(): Promise<exec.ExecOutput> {
-    return execCommand(`git add CHANGELOG.md`).then(() =>
+function updateGitChanges(
+    changelog_fileName: string
+): Promise<exec.ExecOutput> {
+    return execCommand(`git add ${changelog_fileName}`).then(() =>
         execCommand("git checkout -- package.json package-lock.json")
     );
 }
 
-function setOutputs(): Promise<void> {
+function setOutputs(changelog_fileName: string): Promise<void> {
     return readVersion()
         .then(version => core.setOutput("version", version))
         .then(() =>
-            readFile("changelog.md").then(content =>
+            readFile(changelog_fileName).then(content =>
                 core.setOutput("changelog", content)
             )
         );
