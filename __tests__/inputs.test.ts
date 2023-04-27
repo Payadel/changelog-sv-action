@@ -31,7 +31,7 @@ async function assertValidVersion(inputVersion: string): Promise<void> {
     expect(inputs.version).toBe(inputVersion);
 }
 
-describe("getInputs", () => {
+describe("version", () => {
     it("give valid input, should return version", async () => {
         await assertValidVersion(""); // Empty is valid
         await assertValidVersion("1");
@@ -70,5 +70,70 @@ describe("getInputs", () => {
         const inputs: IInputs = await getInputs();
 
         expect(inputs.version).toBe(version);
+    });
+});
+
+describe("changelogVersionRegex", () => {
+    it("give valid regex string, should return regex", async () => {
+        const changelogVersionRegex = "[0-9]+";
+        jest.spyOn(core, "getInput").mockImplementation(
+            (name: string, options?: core.InputOptions | undefined) =>
+                mockGetInput(
+                    name,
+                    [
+                        {
+                            key: "changelog-version-regex",
+                            value: changelogVersionRegex,
+                        },
+                    ],
+                    options
+                )
+        );
+        const inputs = await getInputs();
+        expect(inputs.changelogVersionRegex.toString()).toBe(
+            `/${changelogVersionRegex}/`
+        );
+    });
+
+    it("give invalid regex, should reject promise", async () => {
+        jest.spyOn(core, "getInput").mockImplementation(
+            (name: string, options?: core.InputOptions | undefined) =>
+                mockGetInput(
+                    name,
+                    [
+                        {
+                            key: "changelog-version-regex",
+                            value: "[0-9+",
+                        },
+                    ],
+                    options
+                )
+        );
+        await expect(getInputs()).rejects.toThrow(
+            "Invalid regular expression: /[0-9+/: Unterminated character class"
+        );
+    });
+
+    it("Input regex must be trim", async () => {
+        const changelogVersionRegex = "[0-9]+";
+        jest.spyOn(core, "getInput").mockImplementation(
+            (name: string, options?: core.InputOptions | undefined) =>
+                mockGetInput(
+                    name,
+                    [
+                        {
+                            key: "changelog-version-regex",
+                            value: `    ${changelogVersionRegex}     `,
+                        },
+                    ],
+                    options
+                )
+        );
+
+        const inputs: IInputs = await getInputs();
+
+        expect(inputs.changelogVersionRegex.toString()).toBe(
+            `/${changelogVersionRegex}/`
+        );
     });
 });

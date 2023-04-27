@@ -19,20 +19,6 @@ export function execCommand(
         });
 }
 
-export function readVersion(package_path: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        if (!fs.existsSync(package_path)) {
-            return reject(
-                new Error(`Can not find package.json in '${package_path}'.`)
-            );
-        }
-        return execCommand(
-            `node -p -e "require('${package_path}').version"`,
-            `Read version from '${package_path}' failed.`
-        ).then(version => resolve(version.stdout.trim()));
-    });
-}
-
 export function readFile(fileName: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         if (!fs.existsSync(fileName)) {
@@ -42,28 +28,43 @@ export function readFile(fileName: string): Promise<string> {
     });
 }
 
-/**
- * Compare two semantic version numbers and return a number indicating their order.
- *
- * @param {string} version1 - The first version number to compare.
- * @param {string} version2 - The second version number to compare.
- *
- * @returns {number} Returns -1 if version1 is less than version2, 0 if they are equal, or 1 if version1 is greater than version2.
- */
-export function compareVersions(version1, version2): number {
-    const v1 = version1.split(".");
-    const v2 = version2.split(".");
+export function readChangelogSection(
+    changelog_file: string,
+    version: string,
+    pattern: RegExp
+): Promise<string> {
+    return readFile(changelog_file).then(content => {
+        const lines = content.split("\n");
+        version = version.toLowerCase();
 
-    for (let i = 0; i < v1.length || i < v2.length; i++) {
-        const num1 = parseInt(v1[i], 10) || 0;
-        const num2 = parseInt(v2[i], 10) || 0;
-
-        if (num1 > num2) {
-            return 1;
-        } else if (num1 < num2) {
-            return -1;
+        // Find headers
+        const headerLines = lines
+            .filter(line => pattern.test(line))
+            .map((line, index) => ({ line, index }));
+        if (headerLines.length === 0) {
+            throw new Error(
+                "Can not find or detect any changelog header.\n" +
+                    "You can update regex or report this issue with details."
+            );
         }
-    }
 
-    return 0;
+        // Find target header (with specific version)
+        const targetIndex = headerLines.findIndex(line =>
+            new RegExp(`\\b${version}\\b`).test(line.line)
+        );
+        if (targetIndex < 0) {
+            throw new Error(
+                `Can not find or detect any changelog with version ${version}.\n` +
+                    "You can update regex or report this issue with details."
+            );
+        }
+
+        const startLineIndex = headerLines[targetIndex].index;
+        const endLineIndex =
+            targetIndex + 1 < headerLines.length
+                ? headerLines[targetIndex + 1].index
+                : lines.length;
+
+        return lines.slice(startLineIndex, endLineIndex + 1).join("\n");
+    });
 }

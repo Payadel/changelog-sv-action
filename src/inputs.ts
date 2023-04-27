@@ -6,6 +6,7 @@ export interface IInputs {
     version: string;
     ignoreSameVersionError: boolean;
     ignoreLessVersionError: boolean;
+    changelogVersionRegex: RegExp;
 }
 
 export const getInputs = (): Promise<IInputs> =>
@@ -21,10 +22,19 @@ export const getInputs = (): Promise<IInputs> =>
             "ignore-less-version-error"
         );
 
+        const changelogVersionRegexStr = getInputOrDefault(
+            "changelog-version-regex",
+            "[#]+[ ]+((\\[[^\\]]+\\]\\([^)]+\\))|[^ ]+)[ ]+\\([^)]+\\)",
+            true,
+            false
+        );
+        const changelogVersionRegex = new RegExp(changelogVersionRegexStr);
+
         return resolve({
             version,
             ignoreSameVersionError,
             ignoreLessVersionError,
+            changelogVersionRegex,
         });
     });
 
