@@ -25,7 +25,8 @@ function mainProcess(): Promise<void> {
                 updateVersion(
                     inputs.version,
                     prevVersion,
-                    inputs.ignoreSameVersionError
+                    inputs.ignoreSameVersionError,
+                    inputs.ignoreLessVersionError
                 )
                     .then(() => createChangelog(inputs.version))
                     .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
@@ -44,7 +45,8 @@ function installStandardVersion(): Promise<exec.ExecOutput> {
 function updateVersion(
     inputVersion: string,
     prevVersion: string,
-    ignoreSameVersionError: boolean
+    ignoreSameVersionError: boolean,
+    ignoreLessVersionError: boolean
 ): Promise<void> {
     return new Promise<void>(() => {
         if (!inputVersion) return;
@@ -56,7 +58,10 @@ function updateVersion(
                 `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.`
             );
         }
-        if (compareVersions(inputVersion, prevVersion) === -1) {
+        if (
+            !ignoreLessVersionError &&
+            compareVersions(inputVersion, prevVersion) === -1
+        ) {
             throw new Error(
                 `The input version '${inputVersion}' is less than previously version '${prevVersion}'.`
             );

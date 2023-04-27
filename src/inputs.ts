@@ -5,6 +5,7 @@ import { getBooleanInput } from "@actions/core";
 export interface IInputs {
     version: string;
     ignoreSameVersionError: boolean;
+    ignoreLessVersionError: boolean;
 }
 
 export const getInputs = (): Promise<IInputs> =>
@@ -16,10 +17,14 @@ export const getInputs = (): Promise<IInputs> =>
         const ignoreSameVersionError = getBooleanInput(
             "ignore-same-version-error"
         );
+        const ignoreLessVersionError = getBooleanInput(
+            "ignore-less-version-error"
+        );
 
         return resolve({
             version,
             ignoreSameVersionError,
+            ignoreLessVersionError,
         });
     });
 
