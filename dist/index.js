@@ -33,12 +33,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getInputs = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const version_1 = __nccwpck_require__(217);
+const core_1 = __nccwpck_require__(186);
 const getInputs = () => new Promise(resolve => {
     const version = getInputOrDefault("version", "", true, false);
     if (version && !(0, version_1.isVersionValid)(version))
         throw new Error("The input version is not valid.");
+    const ignoreSameVersionError = (0, core_1.getBooleanInput)("ignore-same-version-error");
     return resolve({
         version,
+        ignoreSameVersionError,
     });
 });
 exports.getInputs = getInputs;
@@ -113,7 +116,7 @@ exports["default"] = run;
 function mainProcess() {
     return (0, inputs_1.getInputs)().then(inputs => {
         return installStandardVersion()
-            .then(() => updateVersion(inputs.version))
+            .then(() => updateVersion(inputs.version, inputs.ignoreSameVersionError))
             .then(() => createChangelog(inputs.version))
             .then(() => updateGitChanges(CHANGELOG_FILE_NAME))
             .then(() => setOutputs(CHANGELOG_FILE_NAME));
@@ -122,12 +125,21 @@ function mainProcess() {
 function installStandardVersion() {
     return (0, utility_1.execCommand)("npm install -g standard-version", "Install standard-version npm package failed.");
 }
-function updateVersion(inputVersion) {
-    return new Promise(resolve => {
+function updateVersion(inputVersion, ignoreSameVersionError) {
+    return new Promise(() => {
         if (!inputVersion)
-            return resolve();
-        core.info(`set version to ${inputVersion}`);
-        return (0, utility_1.execCommand)(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`, `Update version to requested version (${inputVersion}) failed.`);
+            return;
+        return Promise.resolve()
+            .then(() => {
+            if (ignoreSameVersionError)
+                return;
+            return (0, utility_1.readVersion)("./package.json").then(version => {
+                if (version === inputVersion)
+                    throw new Error(`The input version '${inputVersion}' is equal to the previously version '${version}'.`);
+            });
+        })
+            .then(() => core.info(`set version to ${inputVersion}`))
+            .then(() => (0, utility_1.execCommand)(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`, `Update version to requested version (${inputVersion}) failed.`));
     });
 }
 function createChangelog(inputVersion) {
