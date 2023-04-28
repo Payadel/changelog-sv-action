@@ -199,11 +199,11 @@ A: Yes, you can use `changelog-sv-action` in your GitHub Actions workflow. Simpl
 If you want to say **thank you** or/and support active development of `changelog-sv-action`:
 
 - Add a [GitHub Star](https://github.com/Payadel/changelog-sv-action) to the project.
-- Tweet about the PROJECT_NAME.
+- Tweet about the `changelog-sv-action`.
 - Write interesting articles about the project on [Dev.to](https://dev.to/), [Medium](https://medium.com/) or your
   personal blog.
 
-Together, we can make PROJECT_NAME **better**!
+Together, we can make `changelog-sv-action` **better**!
 
 ## Contributing
 
@@ -222,7 +222,7 @@ see [the contributors page](https://github.com/Payadel/changelog-sv-action/contr
 
 ## Security
 
-PROJECT_NAME follows good practices of security, but 100% security cannot be assured. PROJECT_NAME is provided **"as
+`changelog-sv-action` follows good practices of security, but 100% security cannot be assured. `changelog-sv-action` is provided **"as
 is"** without any **warranty**.
 
 _For more information and to report security issues, please refer to our [security documentation](docs/SECURITY.md)._
