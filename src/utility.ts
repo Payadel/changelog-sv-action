@@ -38,9 +38,11 @@ export function readChangelogSection(
         version = version.toLowerCase();
 
         // Find headers
-        const headerLines = lines
-            .filter(line => pattern.test(line))
-            .map((line, index) => ({ line, index }));
+        const headerLines: { line: string; index: number }[] = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (pattern.test(lines[i]))
+                headerLines.push({ line: lines[i], index: i });
+        }
         if (headerLines.length === 0) {
             throw new Error(
                 "Can not find or detect any changelog header.\n" +
@@ -65,6 +67,6 @@ export function readChangelogSection(
                 ? headerLines[targetIndex + 1].index
                 : lines.length;
 
-        return lines.slice(startLineIndex, endLineIndex + 1).join("\n");
+        return lines.slice(startLineIndex, endLineIndex).join("\n");
     });
 }
