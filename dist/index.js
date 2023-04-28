@@ -128,7 +128,7 @@ const version_1 = __nccwpck_require__(8217);
 const utility_1 = __nccwpck_require__(2857);
 const core = __importStar(__nccwpck_require__(2186));
 function getOutputData(package_json_path, changelog_file, changelogVersionRegex) {
-    return new Promise(() => (0, version_1.readVersion)(package_json_path).then(latestVersion => (0, utility_1.readChangelogSection)(changelog_file, latestVersion, changelogVersionRegex).then(changelog => ({ version: latestVersion, changelog }))));
+    return (0, version_1.readVersion)(package_json_path).then(latestVersion => (0, utility_1.readChangelogSection)(changelog_file, latestVersion, changelogVersionRegex).then(changelog => ({ version: latestVersion, changelog })));
 }
 exports.getOutputData = getOutputData;
 function setOutputs(data) {
@@ -183,21 +183,24 @@ const run = (package_json_path, changelog_filename) => mainProcess(package_json_
 exports["default"] = run;
 function mainProcess(package_json_path, changelog_filename) {
     return (0, inputs_1.getInputs)().then(inputs => {
-        return installStandardVersion().then(() => updateVersion(inputs.version, package_json_path, inputs.ignoreSameVersionError, inputs.ignoreLessVersionError)
+        return installStandardVersion()
+            .then(() => updateVersion(inputs.version, package_json_path, inputs.ignoreSameVersionError, inputs.ignoreLessVersionError))
             .then(() => createChangelog(inputs.version))
-            .then(() => updateGitChanges(changelog_filename))
             .then(() => (0, output_1.getOutputData)(package_json_path, changelog_filename, inputs.changelogVersionRegex))
-            .then(output_1.setOutputs));
+            .then(output_1.setOutputs)
+            .then(() => updateGitChanges(changelog_filename))
+            .then(() => Promise.resolve());
     });
 }
 function installStandardVersion() {
     return (0, utility_1.execCommand)("npm install -g standard-version", "Install standard-version npm package failed.");
 }
 function updateVersion(inputVersion, package_json_path, ignoreSameVersionError, ignoreLessVersionError) {
-    return new Promise(() => {
+    return new Promise((resolve, reject) => {
         if (!inputVersion)
-            return;
-        return (0, version_1.readVersion)(package_json_path).then(prevVersion => {
+            return resolve();
+        return (0, version_1.readVersion)(package_json_path)
+            .then(prevVersion => {
             if (!ignoreSameVersionError &&
                 prevVersion.toLowerCase() === inputVersion.toLowerCase()) {
                 throw new Error(`The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.\n` +
@@ -210,7 +213,9 @@ function updateVersion(inputVersion, package_json_path, ignoreSameVersionError, 
             }
             core.info(`set version to ${inputVersion}`);
             return (0, utility_1.execCommand)(`standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`, `Update version to requested version (${inputVersion}) failed.`);
-        });
+        })
+            .then(() => resolve())
+            .catch(reject);
     });
 }
 function createChangelog(inputVersion) {
@@ -269,7 +274,7 @@ function execCommand(command, errorMessage = null) {
         .then(output => {
         if (output.exitCode === 0)
             return output;
-        throw new Error(output.stderr);
+        throw new Error(`${output.stderr}\n${output.stdout}`);
     })
         .catch(error => {
         const title = errorMessage || `Execute '${command}' failed.`;
