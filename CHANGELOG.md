@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/Payadel/changelog-sv-action/compare/v0.0.3...v0.0.4) (2023-04-28)
+
+
+### Features
+
+* add `ignoreLessVersionError` ([7727b10](https://github.com/Payadel/changelog-sv-action/commit/7727b10d0bfadd8f9649563f8bc2d3685934d822))
+* raise error if input version be less than previous version ([fc1167b](https://github.com/Payadel/changelog-sv-action/commit/fc1167b8baf6e06db9a6528c23bdfd62cdca5d12))
+
+
+### Refactors
+
+* add configs.ts ([3bec34f](https://github.com/Payadel/changelog-sv-action/commit/3bec34f86e14f5344fb494f47675b872bcfaad8f))
+
+
+### Tests
+
+* add test for readChangelogSection ([3c9b83b](https://github.com/Payadel/changelog-sv-action/commit/3c9b83b5c859ccc2c3061f2663ae9b559dcd0f1a))
+* add tests for outputs.ts ([2653602](https://github.com/Payadel/changelog-sv-action/commit/265360253086714fff74a74b7a79175f984ac5a9))
+
+
+### Fixes
+
+* checkout all files except CHANGELOG.md ([9147f95](https://github.com/Payadel/changelog-sv-action/commit/9147f951029a200ee6e31624e54b7c44ee65950c))
+* fix `readChangelogSection` ([8024443](https://github.com/Payadel/changelog-sv-action/commit/80244436f943a38427ee749ec6f22b7a060446e1))
+* fix bugs ([c5718a4](https://github.com/Payadel/changelog-sv-action/commit/c5718a4c86852195116e42bdf6df4a17e0ba06a5))
+* only the text of the latest changelog is displayed ([a55320f](https://github.com/Payadel/changelog-sv-action/commit/a55320fbd1a191f2c38a8b0c276933b4d450eb11))
+* update same and less version error messages ([2687165](https://github.com/Payadel/changelog-sv-action/commit/26871650012378b3620da96aa46feffd58c7c9bb))
+
+
+### Development: CI/CD, Build, etc
+
+* remove excess step in changelog.yaml ([543f0fa](https://github.com/Payadel/changelog-sv-action/commit/543f0faa6d3a8d20da64a1652396f005d144a4fe))
+* update actions ([7a074e9](https://github.com/Payadel/changelog-sv-action/commit/7a074e91b4b500233f9e9e7c68e29c8295769600))
+* update build-test.yml ([d61ad3b](https://github.com/Payadel/changelog-sv-action/commit/d61ad3bc0475c1ff253819f3465094cf1256e530))
+
 ### [0.0.3](https://github.com/Payadel/changelog-sv-action/compare/v0.0.2...v0.0.3) (2023-04-27)
 
 
