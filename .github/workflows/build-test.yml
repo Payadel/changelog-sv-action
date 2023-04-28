@@ -59,7 +59,7 @@ jobs:
           inputs: |
             - name: success
               type: Equals
-              actual: '${{ steps.step2.outcome }}'
+              actual: '${{ steps.changelog.outcome }}'
               expected: 'success'
             - name: version
               type: Equals
