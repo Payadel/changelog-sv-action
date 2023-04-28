@@ -127,6 +127,68 @@ jobs:
               container: '${{ steps.less_version_ok.outputs.changelog }}'
               case_sensitive: false
 
+# ---------------------------------------------------------------------------------------------------
+      - name: Read current version
+        run: |
+          version=$(node -p -e "require('./package.json').version")
+          echo "Current version: $version"
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: Run Action - Same Version - Fail
+        uses: ./
+        id: same_version_error
+        continue-on-error: true
+        with:
+          version: '${{ env.VERSION }}'
+          ignore-same-version-error: false
+
+      - name: Test Same Version - Failed
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.same_version_error.outcome }}'
+              expected: 'failure'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.same_version_error.outputs.version }}'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.same_version_error.outputs.changelog }}'
+
+      - name: Run Action - Same Version - Ok
+        uses: ./
+        id: same_version_ok
+        continue-on-error: true
+        with:
+          version: '${{ env.VERSION }}'
+          ignore-same-version-error: true
+
+      - name: Test Same Version - OK
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.same_version_ok.outcome }}'
+              expected: 'success'
+            - name: version
+              type: Equals
+              expected: '${{ env.VERSION }}'
+              actual: '${{ steps.same_version_ok.outputs.version }}'
+            - name: same version
+              type: In
+              member: 'add fake text file'
+              container: '${{ steps.same_version_ok.outputs.changelog }}'
+              case_sensitive: false
+
 #      - name: Delete commit
 #        run: git reset --hard HEAD~1
 #        if: always()
