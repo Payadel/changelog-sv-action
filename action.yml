@@ -13,6 +13,14 @@ inputs:
     description: 'ignore the same version error or not?'
     required: false
     default: 'false'
+  ignore-less-version-error:
+    description: 'ignore the less version error or not?'
+    required: false
+    default: 'false'
+  changelog-version-regex:
+    description: 'The regex with which we find the version lines in the changelog file.'
+    default: ''
+    required: false
 outputs:
   version:
     description: 'The version that was produced'

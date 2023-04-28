@@ -9,7 +9,7 @@ export function execCommand(
         .getExecOutput(command)
         .then(output => {
             if (output.exitCode === 0) return output;
-            throw new Error(output.stderr);
+            throw new Error(`${output.stderr}\n${output.stdout}`);
         })
         .catch(error => {
             const title = errorMessage || `Execute '${command}' failed.`;
@@ -19,25 +19,54 @@ export function execCommand(
         });
 }
 
-export function readVersion(package_path: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        if (!fs.existsSync(package_path)) {
-            return reject(
-                new Error(`Can not find package.json in '${package_path}'.`)
-            );
-        }
-        return execCommand(
-            `node -p -e "require('${package_path}').version"`,
-            `Read version from '${package_path}' failed.`
-        ).then(version => resolve(version.stdout.trim()));
-    });
-}
-
 export function readFile(fileName: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         if (!fs.existsSync(fileName)) {
             return reject(new Error(`Can not find '${fileName}'.`));
         }
         resolve(fs.readFileSync(fileName, "utf8").trim());
+    });
+}
+
+export function readChangelogSection(
+    changelog_file: string,
+    version: string,
+    pattern: RegExp
+): Promise<string> {
+    return readFile(changelog_file).then(content => {
+        const lines = content.split("\n");
+        version = version.toLowerCase();
+
+        // Find headers
+        const headerLines: { line: string; index: number }[] = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (pattern.test(lines[i]))
+                headerLines.push({ line: lines[i], index: i });
+        }
+        if (headerLines.length === 0) {
+            throw new Error(
+                "Can not find or detect any changelog header.\n" +
+                    "You can update regex or report this issue with details."
+            );
+        }
+
+        // Find target header (with specific version)
+        const targetIndex = headerLines.findIndex(line =>
+            new RegExp(`\\b${version}\\b`).test(line.line)
+        );
+        if (targetIndex < 0) {
+            throw new Error(
+                `Can not find or detect any changelog with version ${version}.\n` +
+                    "You can update regex or report this issue with details."
+            );
+        }
+
+        const startLineIndex = headerLines[targetIndex].index;
+        const endLineIndex =
+            targetIndex + 1 < headerLines.length
+                ? headerLines[targetIndex + 1].index
+                : lines.length;
+
+        return lines.slice(startLineIndex, endLineIndex).join("\n");
     });
 }

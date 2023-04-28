@@ -1,10 +1,13 @@
 import * as core from "@actions/core";
 import { isVersionValid } from "./version";
 import { getBooleanInput } from "@actions/core";
+import { DEFAULT_CHANGELOG_VERSION_REGEX } from "./configs";
 
 export interface IInputs {
     version: string;
     ignoreSameVersionError: boolean;
+    ignoreLessVersionError: boolean;
+    changelogVersionRegex: RegExp;
 }
 
 export const getInputs = (): Promise<IInputs> =>
@@ -16,10 +19,23 @@ export const getInputs = (): Promise<IInputs> =>
         const ignoreSameVersionError = getBooleanInput(
             "ignore-same-version-error"
         );
+        const ignoreLessVersionError = getBooleanInput(
+            "ignore-less-version-error"
+        );
+
+        const changelogVersionRegexStr = getInputOrDefault(
+            "changelog-version-regex",
+            DEFAULT_CHANGELOG_VERSION_REGEX,
+            true,
+            false
+        );
+        const changelogVersionRegex = new RegExp(changelogVersionRegexStr);
 
         return resolve({
             version,
             ignoreSameVersionError,
+            ignoreLessVersionError,
+            changelogVersionRegex,
         });
     });
 
