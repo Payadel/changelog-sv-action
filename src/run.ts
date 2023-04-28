@@ -105,6 +105,6 @@ function updateGitChanges(
     changelog_fileName: string
 ): Promise<exec.ExecOutput> {
     return execCommand(`git add ${changelog_fileName}`).then(() =>
-        execCommand("git checkout -- package.json package-lock.json")
+        execCommand("git checkout .")
     );
 }
