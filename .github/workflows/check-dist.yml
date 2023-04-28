@@ -10,10 +10,10 @@ on:
     branches:
       - dev
     paths-ignore:
-      - '**.md'
+      - '**/*.md'  # ignore all files with the .md extension in any subdirectory
   pull_request:
     paths-ignore:
-      - '**.md'
+      - '**/*.md'
   workflow_dispatch:
 
 jobs:
