@@ -1,6 +1,7 @@
 import * as core from "@actions/core";
 import { isVersionValid } from "./version";
 import { getBooleanInput } from "@actions/core";
+import { DEFAULT_CHANGELOG_VERSION_REGEX } from "./configs";
 
 export interface IInputs {
     version: string;
@@ -24,7 +25,7 @@ export const getInputs = (): Promise<IInputs> =>
 
         const changelogVersionRegexStr = getInputOrDefault(
             "changelog-version-regex",
-            "[#]+[ ]+((\\[[^\\]]+\\]\\([^)]+\\))|[^ ]+)[ ]+\\([^)]+\\)",
+            DEFAULT_CHANGELOG_VERSION_REGEX,
             true,
             false
         );

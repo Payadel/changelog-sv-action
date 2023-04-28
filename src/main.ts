@@ -1,6 +1,4 @@
 import run from "./run";
-
-export const PACKAGE_JSON_PATH = "./package.json";
-export const CHANGELOG_FILE_NAME = "CHANGELOG.md";
+import { CHANGELOG_FILE_NAME, PACKAGE_JSON_PATH } from "./configs";
 
 run(PACKAGE_JSON_PATH, CHANGELOG_FILE_NAME);
