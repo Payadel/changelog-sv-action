@@ -87,18 +87,17 @@ jobs:
           verbose: true
           inputs: |
             - name: success
-              type: Not-Equals
+              type: Equals
               actual: '${{ steps.less_version_error.outcome }}'
-              expected: 'success'
+              expected: 'failure'
             - name: version
               type: Equals
-              expected: '100.100.100'
+              expected: ''
               actual: '${{ steps.less_version_error.outputs.version }}'
-            - name: less_version
-              type: In
-              member: 'add fake text file'
-              container: '${{ steps.less_version_error.outputs.changelog }}'
-              case_sensitive: false
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.less_version_error.outputs.changelog }}'
 
       - name: Run Action - Less Version - Ok
         uses: ./
