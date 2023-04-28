@@ -150,6 +150,17 @@ All notable changes to this project will be documented in this file. See [standa
         expect(section).toBe(expectedSection);
     });
 
+    it("should throw an error if can not find any changelog header", async () => {
+        const version = "2.0.0";
+        const pattern = /^\#\# \[(.*)\]/;
+
+        await expect(
+            readChangelogSection(changelogFile, version, pattern)
+        ).rejects.toThrow(
+            new RegExp("Can not find or detect any changelog header.")
+        );
+    });
+
     it("should throw an error if the changelog header cannot be found", async () => {
         const version = "2.0.0";
         const pattern = new RegExp(DEFAULT_CHANGELOG_VERSION_REGEX);
