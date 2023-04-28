@@ -9,7 +9,7 @@ export function execCommand(
         .getExecOutput(command)
         .then(output => {
             if (output.exitCode === 0) return output;
-            throw new Error(output.stderr);
+            throw new Error(`${output.stderr}\n${output.stdout}`);
         })
         .catch(error => {
             const title = errorMessage || `Execute '${command}' failed.`;

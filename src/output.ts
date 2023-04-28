@@ -12,14 +12,12 @@ export function getOutputData(
     changelog_file: string,
     changelogVersionRegex: RegExp
 ): Promise<IOutput> {
-    return new Promise<IOutput>(() =>
-        readVersion(package_json_path).then(latestVersion =>
-            readChangelogSection(
-                changelog_file,
-                latestVersion,
-                changelogVersionRegex
-            ).then(changelog => ({ version: latestVersion, changelog }))
-        )
+    return readVersion(package_json_path).then(latestVersion =>
+        readChangelogSection(
+            changelog_file,
+            latestVersion,
+            changelogVersionRegex
+        ).then(changelog => ({ version: latestVersion, changelog }))
     );
 }
 

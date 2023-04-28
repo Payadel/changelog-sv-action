@@ -25,24 +25,26 @@ function mainProcess(
     changelog_filename: string
 ): Promise<void> {
     return getInputs().then(inputs => {
-        return installStandardVersion().then(() =>
-            updateVersion(
-                inputs.version,
-                package_json_path,
-                inputs.ignoreSameVersionError,
-                inputs.ignoreLessVersionError
-            )
-                .then(() => createChangelog(inputs.version))
-                .then(() => updateGitChanges(changelog_filename))
-                .then(() =>
-                    getOutputData(
-                        package_json_path,
-                        changelog_filename,
-                        inputs.changelogVersionRegex
-                    )
+        return installStandardVersion()
+            .then(() =>
+                updateVersion(
+                    inputs.version,
+                    package_json_path,
+                    inputs.ignoreSameVersionError,
+                    inputs.ignoreLessVersionError
                 )
-                .then(setOutputs)
-        );
+            )
+            .then(() => createChangelog(inputs.version))
+            .then(() =>
+                getOutputData(
+                    package_json_path,
+                    changelog_filename,
+                    inputs.changelogVersionRegex
+                )
+            )
+            .then(setOutputs)
+            .then(() => updateGitChanges(changelog_filename))
+            .then(() => Promise.resolve());
     });
 }
 
@@ -59,35 +61,38 @@ function updateVersion(
     ignoreSameVersionError: boolean,
     ignoreLessVersionError: boolean
 ): Promise<void> {
-    return new Promise<void>(() => {
-        if (!inputVersion) return;
+    return new Promise<void>((resolve, reject) => {
+        if (!inputVersion) return resolve();
 
-        return readVersion(package_json_path).then(prevVersion => {
-            if (
-                !ignoreSameVersionError &&
-                prevVersion.toLowerCase() === inputVersion.toLowerCase()
-            ) {
-                throw new Error(
-                    `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.\n` +
-                        "If you want, you can set ignore-same-version-error to ignore this error."
-                );
-            }
-            if (
-                !ignoreLessVersionError &&
-                compareVersions(inputVersion, prevVersion) === -1
-            ) {
-                throw new Error(
-                    `The input version '${inputVersion}' is less than previously version '${prevVersion}'.\n` +
-                        "If you want, you can set ignore-less-version-error to ignore this error."
-                );
-            }
+        return readVersion(package_json_path)
+            .then(prevVersion => {
+                if (
+                    !ignoreSameVersionError &&
+                    prevVersion.toLowerCase() === inputVersion.toLowerCase()
+                ) {
+                    throw new Error(
+                        `The input version '${inputVersion}' is equal to the previously version '${prevVersion}'.\n` +
+                            "If you want, you can set ignore-same-version-error to ignore this error."
+                    );
+                }
+                if (
+                    !ignoreLessVersionError &&
+                    compareVersions(inputVersion, prevVersion) === -1
+                ) {
+                    throw new Error(
+                        `The input version '${inputVersion}' is less than previously version '${prevVersion}'.\n` +
+                            "If you want, you can set ignore-less-version-error to ignore this error."
+                    );
+                }
 
-            core.info(`set version to ${inputVersion}`);
-            return execCommand(
-                `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
-                `Update version to requested version (${inputVersion}) failed.`
-            );
-        });
+                core.info(`set version to ${inputVersion}`);
+                return execCommand(
+                    `standard-version --skip.changelog --skip.tag --skip.commit --release-as ${inputVersion}`,
+                    `Update version to requested version (${inputVersion}) failed.`
+                );
+            })
+            .then(() => resolve())
+            .catch(reject);
     });
 }
 
