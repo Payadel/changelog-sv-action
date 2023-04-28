@@ -70,6 +70,34 @@ jobs:
               member: 'add fake text file'
               container: '${{ steps.changelog.outputs.changelog }}'
               case_sensitive: false
+#      -----------------------------------------------------------
+      - name: Run Action - Less Version
+        uses: ./
+        id: changelog
+        continue-on-error: true
+        with:
+          version: '0.0.0'
+          ignore-less-version-error: false
+
+      - name: Test Less Version - Failed
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Not-Equals
+              actual: '${{ steps.changelog.outcome }}'
+              expected: 'success'
+            - name: version
+              type: Equals
+              expected: '100.100.100'
+              actual: '${{ steps.changelog.outputs.version }}'
+            - name: changelog
+              type: In
+              member: 'add fake text file'
+              container: '${{ steps.changelog.outputs.changelog }}'
+              case_sensitive: false
 
 #      - name: Delete commit
 #        run: git reset --hard HEAD~1
