@@ -184,9 +184,10 @@ jobs:
               expected: '${{ env.VERSION }}'
               actual: '${{ steps.same_version_ok.outputs.version }}'
 # ---------------------------------------------------------------------------------------------------
+
       - name: Git status
         run: |
-          git_status=$(git status)
+          git_status=$(git status --porcelain | awk '{print $2}')
           echo "Git Status: $git_status"
           echo "GIT_STATUS=$git_status" >> $GITHUB_ENV
             
