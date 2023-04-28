@@ -39,6 +39,8 @@ jobs:
         id: changelog
         with:
           version: ${{ inputs.version }}
+          ignore-same-version-error: false
+          ignore-less-version-error: false
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
