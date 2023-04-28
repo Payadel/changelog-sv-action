@@ -1,186 +1,204 @@
-<h1 align="center">
-  <a href="">
-    <img src="" alt="Logo" width="100" height="100">
-  </a>
-</h1>
-
 <div align="center">
-  PROJECT_NAME
+  <h1>Create Changelog GitHub Action</h1>
   <br />
   <a href="#getting-started"><strong>Getting Started »</strong></a>
   <br />
   <br />
-  <a href="https://github.com/GITHUB_USERNAME/REPO_SLUG/issues/new?assignees=&labels=bug&template=BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
+  <a href="https://github.com/Payadel/changelog-sv-action/issues/new?assignees=&labels=bug&template=BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
   ·
-  <a href="https://github.com/GITHUB_USERNAME/REPO_SLUG/issues/new?assignees=&labels=enhancement&template=FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
+  <a href="https://github.com/Payadel/changelog-sv-action/issues/new?assignees=&labels=enhancement&template=FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
   .
-  <a href="https://github.com/GITHUB_USERNAME/REPO_SLUG/issues/new?assignees=&labels=question&template=SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
+  <a href="https://github.com/Payadel/changelog-sv-action/issues/new?assignees=&labels=question&template=SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
 </div>
 
 <div align="center">
 <br />
 
-![GitHub](https://img.shields.io/github/license/User/Repo)
+![GitHub](https://img.shields.io/github/license/Payadel/changelog-sv-action)
 
-[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-[![code with love by GITHUB_USERNAME](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-GITHUB_USERNAME-ff1414.svg?style=flat-square)](https://github.com/GITHUB_USERNAME)
+[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/Payadel/changelog-sv-action/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![code with love by Payadel](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-Payadel-ff1414.svg?style=flat-square)](https://github.com/Payadel)
 
 </div>
 
-<details>
-<summary>Table of Contents</summary>
-
-- [About](#about)
-    - [Demo](#demo)
-    - [Built With](#built-with)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-- [Usage](#usage)
-    - [Documentation](#documentation)
-- [Known issues](#known-issues)
-- [CHANGELOG](#changelog)
-- [Features](#features)
-- [Roadmap](#roadmap)
-- [Support](#support)
-- [Used By](#used-by)
-- [FAQ](#faq)
-- [Project assistance](#project-assistance)
-- [Contributing](#contributing)
-- [Authors & contributors](#authors--contributors)
-- [Security](#security)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
-- [Related](#related)
-
-</details>
-
 ## About
 
-> **[?]**
-> Provide general information about your project here.
-> Put a meaningful, short, plain-language description of:
-> What problem does it (intend to) solve?
-> What is the purpose of your project?
-> What this project is trying to accomplish and why it matters?
-> Why did you undertake it?
-> Describe the problem(s) this project solves.
-> Describe how this software can improve the lives of its audience.
-> Describe what sets this apart from related-projects.
-> You don't have to answer all the questions -- just the ones relevant to your project.
+`changelog-sv-action` is a GitHub action for generating a changelog based on
+the [standard-version](https://www.npmjs.com/package/standard-version) npm package. The purpose of this action is to
+automate the process of generating changelogs for software projects.
+
+Maintaining a clear and concise changelog is an important aspect of software development, as it allows users and
+contributors to easily understand what changes have been made in each version of the software. However, manually
+creating and maintaining a changelog can be a time-consuming and error-prone task.
+
+This action solves the problem of generating changelogs by automating the process using the `standard-version` package.
+It can detect new versions or get a version from the GitHub Action inputs, and it validates the input version to ensure
+that it is not equal to or less than the current version. The action also allows for errors to be ignored using the
+action inputs.
+
+The `changelog-sv-action` generates a new changelog, updates the `CHANGELOG.md` file, and returns only the new section
+as a GitHub Action output. It also returns the new version as `version`. This action only updates the `CHANGELOG.md`
+file so that a pull request can be created in other steps if desired.
+
+By automating the process of generating changelogs, this action helps to save time and reduce errors. It also ensures
+that the changelog is consistent and up-to-date, which is important for maintaining a transparent and well-documented
+software project.
 
 ### Demo
-
-**Screenshot**: If the software has visual components, place a screenshot after the description; e.g.,
 
 <details>
 <summary>Screenshots</summary>
 <br>
 
-> **[?]**
-> Please provide your screenshots here.
-
-|                               Home Page                               |                               Login Page                               |
-| :-------------------------------------------------------------------: | :--------------------------------------------------------------------: |
-| <img src="docs/images/screenshot.png" title="Home Page" width="100%"> | <img src="docs/images/screenshot.png" title="Login Page" width="100%"> |
+<img src="docs/images/sample-generated-changelog.png" title="sample generated changelog" alt="sample generated changelog">
 
 </details>
 
 ### Built With
 
-> **[?]**
-> Please provide the technologies that are used in the project.
-
-**Client:** React, Redux, TailwindCSS
-
-**Server:** Node, Express
+* Typescript
 
 ## Getting Started
 
+To use `changelog-sv-action` in your GitHub workflow, you need to add the action to your repository and configure it
+with the appropriate inputs.
+
 ### Prerequisites
 
-> **[?]**
-> What are the project requirements/dependencies?
-> Describe any dependencies that must be installed for this software to work. This includes programming languages, databases or other storage mechanisms, build tools, frameworks, and so forth. If specific versions of other software are required, or known not to work, call that out.
+Before using `changelog-sv-action`, ensure that your project has the following:
 
-### Installation
-
-> **[?]**
-> Describe how to install and get started with the project.
-> Detailed instructions on how to install, configure, and get the project running. This should be frequently tested to ensure reliability. Alternatively, link to a separate [INSTALL](INSTALL.md) document.
+- `package.json` file with a valid version number: This project is based `standard-version` npm package that uses
+  the `package.json` for managing versions.
 
 ## Usage
 
-> **[?]**
-> How does one go about using it?
-> Provide various use cases and code examples here.
+Add the `changelog-sv-action` to your GitHub workflow.
 
-```javascript
-import Component from 'my-project'
+```yaml
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        default: ''
 
-function App() {
-    return <Component/>
-}
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Generate Changelog
+        uses: payadel/changelog-sv-action@v0.0.4  # Ensure version is latest
+        id: changelog
+        with:
+          version: '${{ inputs.version }}'
+          ignore-same-version-error: 'false'
+          ignore-less-version-error: 'false'
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "chore(changelog): update CHANGELOG.md for v${{ steps.changelog.outputs.version }}"
+          branch: changelog
+          delete-branch: true
+          title: 'Changelog v${{ steps.changelog.outputs.version }}'
+          body: ${{ steps.changelog.outputs.changelog }}
+          assignees: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
 ```
 
 ### Documentation
 
-[Documentation](https://linktodocumentation)
+## Inputs
 
-## Known issues
+`changelog-sv-action` has the following inputs:
 
-Document any known significant shortcomings with the software.
+| Name                        | Description                                                                                                                                       | Required | Default |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| `version`                   | The specific version to generate the changelog for. If not provided, `standard-version` will detect the next version based on the commit history. | `false`  | `''`    |
+| `ignore-same-version-error` | Whether to ignore the error that occurs when the provided version is the same as the current version.                                             | `false`  | `false` |
+| `ignore-less-version-error` | Whether to ignore the error that occurs when the provided version is less than the current version.                                               | `false`  | `false` |
+| `changelog-version-regex`   | The regex with which we find the version lines in the changelog file.                                                                             | `false`  | `''`    |
+
+## Outputs
+
+`changelog-sv-action` has the following outputs:
+
+| Name        | Description                                                       |
+|-------------|-------------------------------------------------------------------|
+| `version`   | The version that was produced by `standard-version`.              |
+| `changelog` | The new section of the changelog generated by `standard-version`. |
 
 ## CHANGELOG
 
+Please read [CHANGELOG.md](CHANGELOG.md)
+
 ## Features
 
--
--
+`changelog-sv-action` provides the following features:
+
+- Uses the `standard-version` npm package to manage versions and generate the changelog.
+- Generates a changelog based on the commits since the last release.
+- Updates the `CHANGELOG.md` file with the new section.
+- Returns the new version and the new changelog section as outputs.
+- Validates the input version to ensure it is greater than the current version.
+- Ignores validation errors if specified in the inputs.
+
+`changelog-sv-action` is useful for developers who want to automate the process of generating a changelog for their projects. It saves time and ensures that the changelog is always up-to-date with the latest changes. Additionally, it helps maintain consistency in versioning and changelog formatting across multiple projects.
 
 ## Roadmap
 
-See the [open issues](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues) for a list of proposed features (and known
+See the [open issues](https://github.com/Payadel/changelog-sv-action/issues) for a list of proposed features (and known
 issues).
 
-- [Top Feature Requests](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues?q=label%3Aenhancement+is%3Aopen+sort%3Areactions-%2B1-desc) (
+- [Top Feature Requests](https://github.com/Payadel/changelog-sv-action/issues?q=label%3Aenhancement+is%3Aopen+sort%3Areactions-%2B1-desc) (
   Add your votes using the 👍 reaction)
-- [Top Bugs](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc) (
+- [Top Bugs](https://github.com/Payadel/changelog-sv-action/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc) (
   Add your votes using the 👍 reaction)
-- [Newest Bugs](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
+- [Newest Bugs](https://github.com/Payadel/changelog-sv-action/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
 
 ## Support
 
-> **[?]**
-> Provide additional ways to contact the project maintainer/maintainers.
-
 Reach out to the maintainer at one of the following places:
 
-- [GitHub issues](https://github.com/GITHUB_USERNAME/REPO_SLUG/issues/new?assignees=&labels=question&template=SUPPORT_QUESTION.md&title=support%3A+)
-- Contact options listed on [this GitHub profile](https://github.com/GITHUB_USERNAME)
-
-## Used By
-
-This project is used by the following companies:
-
-- Company 1
-- Company 2
+- [GitHub issues](https://github.com/Payadel/changelog-sv-action/issues/new?assignees=&labels=question&template=SUPPORT_QUESTION.md&title=support%3A+)
 
 ## FAQ
 
-#### Question 1
+#### Q: Why should I use `changelog-sv-action` instead of manually generating the changelog?
 
-Answer 1
+A: Manually generating a changelog can be time-consuming and error-prone. `changelog-sv-action` automates the process and ensures that the changelog is always up-to-date with the latest changes. Additionally, it helps maintain consistency in versioning and changelog formatting across multiple projects.
 
-#### Question 2
+#### Q: Can I specify the version number to generate the changelog for?
 
-Answer 2
+A: You can specify the version number using the `version` input. If not provided, `standard-version` will detect the next version based on the commit history.
+
+#### Q: What happens if the provided version is less than or equal to the current version?
+
+A: By default, `changelog-sv-action` will fail if the provided version is less than or equal to the current version. However, you can ignore these errors by setting `ignore-same-version-error` and `ignore-less-version-error` inputs to `true`.
+
+#### Q: How does `changelog-sv-action` update the `CHANGELOG.md` file?
+
+A: `changelog-sv-action` uses the `standard-version` npm package to manage versions and generate the changelog. It updates the `CHANGELOG.md` file with the new section and adds an entry for the new version.
+
+#### Q: Can I use `changelog-sv-action` in my workflow?
+
+A: Yes, you can use `changelog-sv-action` in your GitHub Actions workflow. Simply add it as a step in your workflow and provide the necessary inputs.
 
 ## Project assistance
 
-If you want to say **thank you** or/and support active development of PROJECT_NAME:
+If you want to say **thank you** or/and support active development of `changelog-sv-action`:
 
-- Add a [GitHub Star](https://github.com/GITHUB_USERNAME/REPO_SLUG) to the project.
+- Add a [GitHub Star](https://github.com/Payadel/changelog-sv-action) to the project.
 - Tweet about the PROJECT_NAME.
 - Write interesting articles about the project on [Dev.to](https://dev.to/), [Medium](https://medium.com/) or your
   personal blog.
@@ -197,10 +215,10 @@ Please read [our contribution guidelines](docs/CONTRIBUTING.md), and thank you f
 
 ## Authors & contributors
 
-The original setup of this repository is by [FULL_NAME](https://github.com/GITHUB_USERNAME).
+The original setup of this repository is by [Payadel](https://github.com/Payadel).
 
 For a full list of all authors and contributors,
-see [the contributors page](https://github.com/GITHUB_USERNAME/REPO_SLUG/contributors).
+see [the contributors page](https://github.com/Payadel/changelog-sv-action/contributors).
 
 ## Security
 
@@ -215,16 +233,10 @@ This project is licensed under the **GPLv3**.
 
 See [LICENSE](LICENSE) for more information.
 
-## Acknowledgements
-
-> **[?]**
-> If your work was funded by any organization or institution, acknowledge their support here.
-> In addition, if your work relies on other software libraries, or was inspired by looking at other work, it is appropriate to acknowledge this intellectual debt too.
-
 ## Related
 
 Here are some related projects
 
-[Awesome README](https://github.com/matiassingers/awesome-readme)
+- [Standard Version](https://www.npmjs.com/package/standard-version)
 
 
