@@ -35,27 +35,174 @@ jobs:
         with:
           node-version: 16
 
-      - name: Run Action
-        uses: ./
-        id: changelog
-        with:
-          version: '1.0.0'
+      - name: Add fake commit
+        run: |
+          echo "This is a fake text file for testing purposes." > fake.txt
+          git add fake.txt
+          
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git commit -m "feat: add fake text file"
 
-      # For more information and sample asserts, please see https://github.com/Payadel/assert/
-      - name: Test outputs
+      - name: Run Action - OK
+        uses: ./
+        id: changelog_ok
+        continue-on-error: true
+        with:
+          version: '100.100.100'
+
+      - name: Test Ok
         uses: Payadel/assert@v1.0.0
         with:
           fail-fast: false
           verbose: true
           inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.changelog_ok.outcome }}'
+              expected: 'success'
             - name: version
               type: Equals
-              expected: '1.0.0'
-              actual: ${{ steps.changelog.outputs.version }}
+              expected: '100.100.100'
+              actual: '${{ steps.changelog_ok.outputs.version }}'
+            - name: changelog
+              type: In
+              member: 'add fake text file'
+              container: '${{ steps.changelog_ok.outputs.changelog }}'
+              case_sensitive: false
+      # -------------------------------------------------------------------------------
 
-      - name: Get the output
+      - name: Run Action - Less Version - Fail
+        uses: ./
+        id: less_version_error
+        continue-on-error: true
+        with:
+          version: '0.0.0'
+          ignore-less-version-error: false
+
+      - name: Test Less Version - Failed
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.less_version_error.outcome }}'
+              expected: 'failure'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.less_version_error.outputs.version }}'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.less_version_error.outputs.changelog }}'
+
+      - name: Run Action - Less Version - Ok
+        uses: ./
+        id: less_version_ok
+        continue-on-error: true
+        with:
+          version: '0.0.0'
+          ignore-less-version-error: true
+
+      - name: Test Less Version - OK
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.less_version_ok.outcome }}'
+              expected: 'success'
+            - name: version
+              type: Equals
+              expected: '0.0.0'
+              actual: '${{ steps.less_version_ok.outputs.version }}'
+            - name: less_version
+              type: In
+              member: 'add fake text file'
+              container: '${{ steps.less_version_ok.outputs.changelog }}'
+              case_sensitive: false
+
+      # ---------------------------------------------------------------------------------------------------
+      - name: Read current version
         run: |
-          echo "Outputs:"
-          echo "Version: ${{ steps.changelog.outputs.version }}"
-          echo "Changelog: ${{ steps.changelog.outputs.changelog }}"
+          version=$(node -p -e "require('./package.json').version")
+          echo "Current version: $version"
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: Run Action - Same Version - Fail
+        uses: ./
+        id: same_version_error
+        continue-on-error: true
+        with:
+          version: '${{ env.VERSION }}'
+          ignore-same-version-error: false
+
+      - name: Test Same Version - Failed
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.same_version_error.outcome }}'
+              expected: 'failure'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.same_version_error.outputs.version }}'
+            - name: version
+              type: Equals
+              expected: ''
+              actual: '${{ steps.same_version_error.outputs.changelog }}'
+
+      - name: Run Action - Same Version - Ok
+        uses: ./
+        id: same_version_ok
+        continue-on-error: true
+        with:
+          version: '${{ env.VERSION }}'
+          ignore-same-version-error: true
+
+      - name: Test Same Version - OK
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.same_version_ok.outcome }}'
+              expected: 'success'
+            - name: version
+              type: Equals
+              expected: '${{ env.VERSION }}'
+              actual: '${{ steps.same_version_ok.outputs.version }}'
+      # ---------------------------------------------------------------------------------------------------
+
+      - name: Git status
+        run: |
+          git_status=$(git status --porcelain | awk '{print $2}')
+          echo "Git Status: $git_status"
+          echo "GIT_STATUS=$git_status" >> $GITHUB_ENV
+
+      - name: Test Git Status
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: 'git status'
+              type: Equals
+              expected: 'CHANGELOG.md'
+              actual: '${{ env.GIT_STATUS }}'    
+
+#      - name: Delete commit
+#        run: git reset --hard HEAD~1
+#        if: always()
 
