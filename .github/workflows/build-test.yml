@@ -70,7 +70,7 @@ jobs:
               member: 'add fake text file'
               container: '${{ steps.changelog_ok.outputs.changelog }}'
               case_sensitive: false
-# -------------------------------------------------------------------------------
+      # -------------------------------------------------------------------------------
 
       - name: Run Action - Less Version - Fail
         uses: ./
@@ -127,7 +127,7 @@ jobs:
               container: '${{ steps.less_version_ok.outputs.changelog }}'
               case_sensitive: false
 
-# ---------------------------------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------------------------------
       - name: Read current version
         run: |
           version=$(node -p -e "require('./package.json').version")
@@ -183,14 +183,24 @@ jobs:
               type: Equals
               expected: '${{ env.VERSION }}'
               actual: '${{ steps.same_version_ok.outputs.version }}'
-# ---------------------------------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------------------------------
 
       - name: Git status
         run: |
           git_status=$(git status --porcelain | awk '{print $2}')
           echo "Git Status: $git_status"
           echo "GIT_STATUS=$git_status" >> $GITHUB_ENV
-            
+
+      - name: Test Git Status
+        uses: Payadel/assert@v1.0.0
+        with:
+          fail-fast: false
+          verbose: true
+          inputs: |
+            - name: 'git status'
+              type: Equals
+              expected: 'CHANGELOG.md'
+              actual: '${{ env.GIT_STATUS }}'    
 
 #      - name: Delete commit
 #        run: git reset --hard HEAD~1
