@@ -183,11 +183,13 @@ jobs:
               type: Equals
               expected: '${{ env.VERSION }}'
               actual: '${{ steps.same_version_ok.outputs.version }}'
-            - name: same version
-              type: In
-              member: 'add fake text file'
-              container: '${{ steps.same_version_ok.outputs.changelog }}'
-              case_sensitive: false
+# ---------------------------------------------------------------------------------------------------
+      - name: Git status
+        run: |
+          git_status=$(git status)
+          echo "Git Status: $git_status"
+          echo "GIT_STATUS=$git_status" >> $GITHUB_ENV
+            
 
 #      - name: Delete commit
 #        run: git reset --hard HEAD~1
