@@ -35,27 +35,43 @@ jobs:
         with:
           node-version: 16
 
-      - name: Run Action
+      - name: Add fake commit
+        run: |
+          echo "This is a fake text file for testing purposes." > fake.txt
+          git add fake.txt
+          
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git commit -m "feat: add fake text file"
+
+      - name: Run Action - OK
         uses: ./
         id: changelog
+        continue-on-error: true
         with:
-          version: '1.0.0'
+          version: '100.100.100'
 
-      # For more information and sample asserts, please see https://github.com/Payadel/assert/
-      - name: Test outputs
+      - name: Test Ok
         uses: Payadel/assert@v1.0.0
         with:
           fail-fast: false
           verbose: true
           inputs: |
+            - name: success
+              type: Equals
+              actual: '${{ steps.step2.outcome }}'
+              expected: 'success'
             - name: version
               type: Equals
-              expected: '1.0.0'
-              actual: ${{ steps.changelog.outputs.version }}
+              expected: '100.100.100'
+              actual: '${{ steps.changelog.outputs.version }}'
+            - name: changelog
+              type: In
+              member: 'add fake text file'
+              container: '${{ steps.changelog.outputs.changelog }}'
+              case_sensitive: false
 
-      - name: Get the output
-        run: |
-          echo "Outputs:"
-          echo "Version: ${{ steps.changelog.outputs.version }}"
-          echo "Changelog: ${{ steps.changelog.outputs.changelog }}"
+#      - name: Delete commit
+#        run: git reset --hard HEAD~1
+#        if: always()
 
