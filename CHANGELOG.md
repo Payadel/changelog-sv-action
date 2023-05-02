@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/Payadel/changelog-sv-action/compare/v0.0.4...v0.0.5) (2023-05-02)
+
+
+### Documents
+
+* update CONTRIBUTING.md ([a8ba945](https://github.com/Payadel/changelog-sv-action/commit/a8ba94540eb87fcdca93f72d29200e6f7ab72c54))
+* update README.md ([3e3573f](https://github.com/Payadel/changelog-sv-action/commit/3e3573f880cca1c0a49af4870aca7b9fe16204a1))
+* update README.md ([7fa8b42](https://github.com/Payadel/changelog-sv-action/commit/7fa8b4258a76ca3adf2ebec2e2a1e10616908170))
+
+
+### Fixes
+
+* minor update ([dadc101](https://github.com/Payadel/changelog-sv-action/commit/dadc101e0079b2dcb66d75aff2f707907a693a04))
+
+
+### Development: CI/CD, Build, etc
+
+* **deps-dev:** bump @types/node from 18.16.1 to 18.16.3 ([6a22bcd](https://github.com/Payadel/changelog-sv-action/commit/6a22bcd4e831df170f4de19937f1fd240b3a63de))
+* **deps-dev:** bump @typescript-eslint/eslint-plugin ([3a95210](https://github.com/Payadel/changelog-sv-action/commit/3a952102b7aa0e6f556a581d26e06c56befb78a6))
+* **deps-dev:** bump @typescript-eslint/parser from 5.59.1 to 5.59.2 ([a143e43](https://github.com/Payadel/changelog-sv-action/commit/a143e43ab03b26c43da4fddd91b970c1fdae3dce))
+* match Makefile with release.yaml ([1fead99](https://github.com/Payadel/changelog-sv-action/commit/1fead9944cba7417b7bf8e6d639c03878da4dd5b))
+* update action events ([e66a8c8](https://github.com/Payadel/changelog-sv-action/commit/e66a8c89d12159e09b2fe42e7257d613bd69e7aa))
+* update release.yaml ([0c8eaf2](https://github.com/Payadel/changelog-sv-action/commit/0c8eaf2fd28749e3fdc4bdef1ac33c4aca37dbdb))
+
 ### [0.0.4](https://github.com/Payadel/changelog-sv-action/compare/v0.0.3...v0.0.4) (2023-04-28)
 
 
