@@ -11,10 +11,10 @@ export interface IInputs {
 }
 
 export const getInputs = (): Promise<IInputs> =>
-    new Promise<IInputs>(resolve => {
+    new Promise<IInputs>((resolve, reject) => {
         const version = getInputOrDefault("version", "", true, false);
         if (version && !isVersionValid(version))
-            throw new Error("The input version is not valid.");
+            return reject(new Error("The input version is not valid."));
 
         const ignoreSameVersionError = getBooleanInput(
             "ignore-same-version-error"
