@@ -49,10 +49,10 @@ const core = __importStar(__nccwpck_require__(2186));
 const version_1 = __nccwpck_require__(8217);
 const core_1 = __nccwpck_require__(2186);
 const configs_1 = __nccwpck_require__(7905);
-const getInputs = () => new Promise(resolve => {
+const getInputs = () => new Promise((resolve, reject) => {
     const version = getInputOrDefault("version", "", true, false);
     if (version && !(0, version_1.isVersionValid)(version))
-        throw new Error("The input version is not valid.");
+        return reject(new Error("The input version is not valid."));
     const ignoreSameVersionError = (0, core_1.getBooleanInput)("ignore-same-version-error");
     const ignoreLessVersionError = (0, core_1.getBooleanInput)("ignore-less-version-error");
     const changelogVersionRegexStr = getInputOrDefault("changelog-version-regex", configs_1.DEFAULT_CHANGELOG_VERSION_REGEX, true, false);
