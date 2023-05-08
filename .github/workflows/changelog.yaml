@@ -19,10 +19,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Print
-        run: |
-          echo "version: ${{ inputs.version }}"
-          echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+      - name: Inputs
+        uses: payadel/inputs@v0.1.0
+        id: inputs
+        with:
+          inputs: |
+            - name: version
+              default: ''
+            
+            - name: current-branch-name
+              default: '$(git rev-parse --abbrev-ref HEAD)'
 
       - uses: actions/setup-node@v3
         with:
@@ -38,7 +44,7 @@ jobs:
         uses: ./
         id: changelog
         with:
-          version: ${{ inputs.version }}
+          version: ${{ steps.inputs.outputs.version }}
           ignore-same-version-error: false
           ignore-less-version-error: false
 
