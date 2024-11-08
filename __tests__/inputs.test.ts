@@ -83,8 +83,8 @@ describe("changelogVersionRegex", () => {
                     [
                         {
                             key: "changelog-version-regex",
-                            value: changelogVersionRegex,
-                        },
+                            value: changelogVersionRegex
+                        }
                     ],
                     options
                 )
@@ -103,8 +103,8 @@ describe("changelogVersionRegex", () => {
                     [
                         {
                             key: "changelog-version-regex",
-                            value: "[0-9+",
-                        },
+                            value: "[0-9+"
+                        }
                     ],
                     options
                 )
@@ -123,8 +123,8 @@ describe("changelogVersionRegex", () => {
                     [
                         {
                             key: "changelog-version-regex",
-                            value: `    ${changelogVersionRegex}     `,
-                        },
+                            value: `    ${changelogVersionRegex}     `
+                        }
                     ],
                     options
                 )

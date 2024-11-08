@@ -6,7 +6,7 @@ describe("setOutputs", () => {
         // Arrange
         const data = {
             version: "1.0.0",
-            changelog: "## [1.0.0] - 2023-04-28\n\n- Initial release\n",
+            changelog: "## [1.0.0] - 2023-04-28\n\n- Initial release\n"
         };
         jest.spyOn(core, "setOutput");
 
