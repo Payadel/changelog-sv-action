@@ -3,7 +3,7 @@ import { getInputs } from "./inputs";
 import * as exec from "@actions/exec";
 import { compareVersions, readVersion } from "./version";
 import { execCommand } from "./utility";
-import { getOutputData, setOutputs } from "./output";
+import { getOutputData, IOutput, setOutputs } from "./output";
 
 const run = (
     package_json_path: string,
@@ -20,32 +20,32 @@ const run = (
 
 export default run;
 
-function mainProcess(
+async function mainProcess(
     package_json_path: string,
     changelog_filename: string
 ): Promise<void> {
-    return getInputs().then(inputs => {
-        return installStandardVersion()
-            .then(() =>
-                updateVersion(
-                    inputs.version,
-                    package_json_path,
-                    inputs.ignoreSameVersionError,
-                    inputs.ignoreLessVersionError
-                )
-            )
-            .then(() => createChangelog(inputs.version))
-            .then(() =>
-                getOutputData(
-                    package_json_path,
-                    changelog_filename,
-                    inputs.changelogVersionRegex
-                )
-            )
-            .then(setOutputs)
-            .then(() => updateGitChanges(changelog_filename))
-            .then(() => Promise.resolve());
-    });
+    const inputs = await getInputs();
+
+    await installStandardVersion();
+
+    await updateVersion(
+        inputs.version,
+        package_json_path,
+        inputs.ignoreSameVersionError,
+        inputs.ignoreLessVersionError
+    );
+
+    await createChangelog(inputs.version);
+
+    const data: IOutput = await getOutputData(
+        package_json_path,
+        changelog_filename,
+        inputs.changelogVersionRegex
+    );
+    setOutputs(data);
+
+    await updateGitChanges(changelog_filename);
+    return await Promise.resolve();
 }
 
 function installStandardVersion(): Promise<exec.ExecOutput> {
@@ -57,7 +57,7 @@ function installStandardVersion(): Promise<exec.ExecOutput> {
 
 function updateVersion(
     inputVersion: string,
-    package_json_path,
+    package_json_path: string,
     ignoreSameVersionError: boolean,
     ignoreLessVersionError: boolean
 ): Promise<void> {
@@ -96,20 +96,16 @@ function updateVersion(
     });
 }
 
-function createChangelog(inputVersion: string): Promise<exec.ExecOutput> {
-    return new Promise<string>(resolve => {
-        let changelogCommand = "standard-version --skip.tag --skip.commit";
-        if (inputVersion) changelogCommand += " --skip.bump";
-        return resolve(changelogCommand);
-    }).then(changelogCommand =>
-        execCommand(changelogCommand, "Create changelog failed.")
-    );
+async function createChangelog(inputVersion: string): Promise<exec.ExecOutput> {
+    let changelogCommand = "standard-version --skip.tag --skip.commit";
+    if (inputVersion) changelogCommand += " --skip.bump";
+
+    return await execCommand(changelogCommand, "Create changelog failed.");
 }
 
-function updateGitChanges(
+async function updateGitChanges(
     changelog_fileName: string
 ): Promise<exec.ExecOutput> {
-    return execCommand(`git add ${changelog_fileName}`).then(() =>
-        execCommand("git checkout .")
-    );
+    await execCommand(`git add ${changelog_fileName}`);
+    return await execCommand("git checkout .");
 }
