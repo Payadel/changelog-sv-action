@@ -23,26 +23,20 @@
 
 ## About
 
-`changelog-sv-action` is a GitHub action for generating a changelog based on
-the [standard-version](https://www.npmjs.com/package/standard-version) npm package. The purpose of this action is to
-automate the process of generating changelogs for software projects.
+`changelog-sv-action` is a GitHub action that automatically creates changelogs using the [standard-version](https://www.npmjs.com/package/standard-version) npm package. It helps developers keep changelogs accurate and up-to-date without extra manual work.
 
-Maintaining a clear and concise changelog is an important aspect of software development, as it allows users and
-contributors to easily understand what changes have been made in each version of the software. However, manually
-creating and maintaining a changelog can be a time-consuming and error-prone task.
+Keeping a clear changelog is important for showing users and contributors what has changed in each software version. However, creating and updating changelogs by hand takes time and can lead to mistakes. This action makes it easier by handling changelog updates automatically.
 
-This action solves the problem of generating changelogs by automating the process using the `standard-version` package.
-It can detect new versions or get a version from the GitHub Action inputs, and it validates the input version to ensure
-that it is not equal to or less than the current version. The action also allows for errors to be ignored using the
-action inputs.
+### Key Features
 
-The `changelog-sv-action` generates a new changelog, updates the `CHANGELOG.md` file, and returns only the new section
-as a GitHub Action output. It also returns the new version as `version`. This action only updates the `CHANGELOG.md`
-file so that a pull request can be created in other steps if desired.
+- **Version Detection and Validation**: Automatically finds the new version or accepts a version you set. It checks that the new version is higher than the current one.
+- **Error Handling**: You can choose to ignore certain errors through the action's settings.
+- **Simplified Output**: Adds a new section to `CHANGELOG.md` and provides only the new part as output, along with the new version as `version`.
 
-By automating the process of generating changelogs, this action helps to save time and reduce errors. It also ensures
-that the changelog is consistent and up-to-date, which is important for maintaining a transparent and well-documented
-software project.
+This action updates only the `CHANGELOG.md` file. You can then create a pull request in later steps, if needed.
+
+By automating changelog updates, `changelog-sv-action` saves time, prevents mistakes, and helps keep project records clear and consistent.
+
 
 ### Demo
 
