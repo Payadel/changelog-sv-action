@@ -35,7 +35,7 @@ export const getInputs = (): Promise<IInputs> =>
             version,
             ignoreSameVersionError,
             ignoreLessVersionError,
-            changelogVersionRegex,
+            changelogVersionRegex
         });
     });
 
@@ -47,7 +47,7 @@ function getInputOrDefault(
 ): string {
     const input = core.getInput(name, {
         trimWhitespace,
-        required,
+        required
     });
     if (!input || input === "") return default_value;
     return input;

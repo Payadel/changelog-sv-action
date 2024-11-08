@@ -15,16 +15,21 @@ jobs:
   changelog:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Print
-        run: |
-          echo "version: ${{ inputs.version }}"
-          echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+      - name: Inputs
+        uses: Payadel/inputs@v0.2.3
+        id: inputs
+        with:
+          inputs: |
+            - name: version
+              default: ''
+            - name: current-branch-name
+              default: '$(git rev-parse --abbrev-ref HEAD)'
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -38,7 +43,7 @@ jobs:
         uses: ./
         id: changelog
         with:
-          version: ${{ inputs.version }}
+          version: ${{ steps.inputs.outputs.version }}
           ignore-same-version-error: false
           ignore-less-version-error: false
 

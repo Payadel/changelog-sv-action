@@ -17,7 +17,7 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: |
           npm install
@@ -35,10 +35,10 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -59,7 +59,7 @@ jobs:
           version: '100.100.100'
 
       - name: Test Ok
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true
@@ -88,7 +88,7 @@ jobs:
           ignore-less-version-error: false
 
       - name: Test Less Version - Failed
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true
@@ -115,7 +115,7 @@ jobs:
           ignore-less-version-error: true
 
       - name: Test Less Version - OK
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true
@@ -150,7 +150,7 @@ jobs:
           ignore-same-version-error: false
 
       - name: Test Same Version - Failed
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true
@@ -177,7 +177,7 @@ jobs:
           ignore-same-version-error: true
 
       - name: Test Same Version - OK
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true
@@ -199,7 +199,7 @@ jobs:
           echo "GIT_STATUS=$git_status" >> $GITHUB_ENV
 
       - name: Test Git Status
-        uses: Payadel/assert@v1.0.0
+        uses: Payadel/assert@v1.0.1
         with:
           fail-fast: false
           verbose: true

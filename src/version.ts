@@ -32,7 +32,7 @@ export function readVersion(package_path: string): Promise<string> {
  *
  * @returns {number} Returns -1 if version1 is less than version2, 0 if they are equal, or 1 if version1 is greater than version2.
  */
-export function compareVersions(version1, version2): number {
+export const compareVersions = (version1: string, version2: string): number => {
     const v1 = version1.split(".");
     const v2 = version2.split(".");
 
@@ -48,4 +48,4 @@ export function compareVersions(version1, version2): number {
     }
 
     return 0;
-}
+};
