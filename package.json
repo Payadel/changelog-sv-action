@@ -1,6 +1,6 @@
 {
   "name": "create-changelog",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "create changelog base standard-version package",
   "main": "lib/main.js",
   "scripts": {
