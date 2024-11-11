@@ -6,14 +6,10 @@
 name: Check dist/
 
 on:
-  push:
-    branches:
-      - dev
-    paths-ignore:
-      - '**/*.md'  # ignore all files with the .md extension in any subdirectory
   pull_request:
-    paths-ignore:
-      - '**/*.md'
+    branches:
+      - main
+      - dev
   workflow_dispatch:
 
 jobs:
